@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import React from 'react'
+import React from "react";
 
 export function Header() {
   return (
@@ -13,16 +13,37 @@ export function Header() {
               Chilly
             </span>
           </div>
-          
+
           <nav className="hidden md:flex items-center gap-6">
-            <a href="#features" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors">
+            <a
+              href="/"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors"
+            >
+              Home
+            </a>
+            <a
+              href="/dashboard"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors"
+            >
+              Dashboard
+            </a>
+            <a
+              href="/analytics"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors"
+            >
+              Analytics
+            </a>
+            <a
+              href="#features"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors"
+            >
               Features
             </a>
-            <a href="#how-it-works" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors">
+            <a
+              href="#how-it-works"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors"
+            >
               How It Works
-            </a>
-            <a href="#about" className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors">
-              About
             </a>
           </nav>
 
@@ -32,5 +53,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

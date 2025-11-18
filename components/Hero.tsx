@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useAccount } from 'wagmi'
+import React from "react";
+import { useAccount } from "wagmi";
 
 export function Hero() {
-  const { isConnected } = useAccount()
+  const { isConnected } = useAccount();
 
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-zinc-50 to-white dark:from-black dark:to-zinc-900 pt-16">
@@ -32,8 +32,9 @@ export function Hero() {
 
           {/* Subheading */}
           <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 mb-12 max-w-2xl mx-auto">
-            Track and manage your orders on the blockchain with complete transparency, 
-            immutability, and trustless verification. No intermediaries, just pure decentralization.
+            Track and manage your orders on the blockchain with complete
+            transparency, immutability, and trustless verification. No
+            intermediaries, just pure decentralization.
           </p>
 
           {/* CTA Buttons */}
@@ -51,13 +52,13 @@ export function Hero() {
             ) : (
               <>
                 <a
-                  href="#dashboard"
+                  href="/dashboard"
                   className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
                 >
                   Go to Dashboard
                 </a>
                 <a
-                  href="#create-order"
+                  href="/dashboard"
                   className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                 >
                   Create Order
@@ -98,16 +99,19 @@ export function Hero() {
 
       {/* Decorative Elements */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-0 -z-10 -translate-x-1/2 blur-3xl xl:-top-6" aria-hidden="true">
+        <div
+          className="absolute left-1/2 top-0 -z-10 -translate-x-1/2 blur-3xl xl:-top-6"
+          aria-hidden="true"
+        >
           <div
             className="aspect-[1155/678] w-[72.1875rem] bg-gradient-to-tr from-orange-400 to-red-600 opacity-20"
             style={{
               clipPath:
-                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
             }}
           />
         </div>
       </div>
     </section>
-  )
+  );
 }
