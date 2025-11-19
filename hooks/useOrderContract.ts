@@ -1,6 +1,12 @@
 "use client";
 
-import { useAccount, useChainId, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useChainId,
+  useReadContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { parseEther, formatEther, Address } from "viem";
 import { OrderTrackingABI } from "@/lib/abis/OrderTracking";
 import {
@@ -70,12 +76,17 @@ export function useMyOrders() {
   });
 
   // Combine and deduplicate order IDs
-  const allOrderIds = buyerOrderIds && sellerOrderIds
-    ? [...new Set([...buyerOrderIds, ...sellerOrderIds])]
-    : buyerOrderIds || sellerOrderIds || [];
+  const allOrderIds =
+    buyerOrderIds && sellerOrderIds
+      ? [...new Set([...buyerOrderIds, ...sellerOrderIds])]
+      : buyerOrderIds || sellerOrderIds || [];
 
   // Fetch all orders
-  const { data: orders, isLoading, error } = useReadContract({
+  const {
+    data: orders,
+    isLoading,
+    error,
+  } = useReadContract({
     address: contractAddress || undefined,
     abi: OrderTrackingABI,
     functionName: "getOrders",
@@ -96,15 +107,26 @@ export function useMyOrders() {
         productDescription: order.productDescription,
         quantity: Number(order.quantity),
         price: formatEther(order.price),
-        currency: order.currency === "0x0000000000000000000000000000000000000000" ? "ETH" : "TOKEN",
+        currency:
+          order.currency === "0x0000000000000000000000000000000000000000"
+            ? "ETH"
+            : "TOKEN",
         status: contractStatusToAppStatus(order.status) as any,
         createdAt: Number(order.createdAt),
         updatedAt: Number(order.updatedAt),
-        estimatedDelivery: order.estimatedDelivery > 0 ? Number(order.estimatedDelivery) : undefined,
+        estimatedDelivery:
+          order.estimatedDelivery > 0
+            ? Number(order.estimatedDelivery)
+            : undefined,
         trackingNumber: order.trackingNumber || undefined,
-        transactionHash: order.transactionHash !== "0x0000000000000000000000000000000000000000" ? order.transactionHash : undefined,
+        transactionHash:
+          order.transactionHash !== "0x0000000000000000000000000000000000000000"
+            ? order.transactionHash
+            : undefined,
         network: order.network || "mainnet",
-        metadata: order.metadataHash ? { ipfsHash: order.metadataHash } : undefined,
+        metadata: order.metadataHash
+          ? { ipfsHash: order.metadataHash }
+          : undefined,
       }))
     : [];
 
@@ -390,4 +412,5 @@ export function useDisputeOrder() {
     error,
   };
 }
+
 

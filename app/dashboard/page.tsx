@@ -23,17 +23,18 @@ export default function DashboardPage() {
   const chainId = useChainId();
   const router = useRouter();
   const contractAddress = useContractAddress();
-  
+
   const [filters, setFilters] = useState<OrderFilters>({
     status: "all",
     network: "all",
     search: "",
   });
-  
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  
+
   // Try to fetch from contract, fallback to mock data
-  const { orders: contractOrders, isLoading: isLoadingContract } = useMyOrders();
+  const { orders: contractOrders, isLoading: isLoadingContract } =
+    useMyOrders();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [useContract, setUseContract] = useState(false);
@@ -41,7 +42,9 @@ export default function DashboardPage() {
   // Check if contract is deployed on current network
   useEffect(() => {
     const address = getContractAddress(chainId);
-    setUseContract(!!address && address !== "0x0000000000000000000000000000000000000000");
+    setUseContract(
+      !!address && address !== "0x0000000000000000000000000000000000000000"
+    );
   }, [chainId]);
 
   // Use contract orders if available, otherwise use mock data
@@ -58,7 +61,6 @@ export default function DashboardPage() {
       setIsLoading(isLoadingContract);
     }
   }, [contractOrders, isLoadingContract, useContract, contractAddress]);
-
 
   // Redirect if not connected
   React.useEffect(() => {
@@ -114,7 +116,11 @@ export default function DashboardPage() {
     };
   }, [filteredOrders]);
 
-  const { createOrder, isPending: isCreating, isSuccess: isCreated } = useCreateOrder();
+  const {
+    createOrder,
+    isPending: isCreating,
+    isSuccess: isCreated,
+  } = useCreateOrder();
 
   const handleCreateOrder = async (orderData: {
     productName: string;
@@ -132,14 +138,22 @@ export default function DashboardPage() {
     if (useContract && contractAddress) {
       try {
         // Use contract to create order
-        const sellerAddress = orderData.seller || "0x0000000000000000000000000000000000000000";
+        const sellerAddress =
+          orderData.seller || "0x0000000000000000000000000000000000000000";
         await createOrder({
           seller: sellerAddress as `0x${string}`,
           productName: orderData.productName,
           productDescription: orderData.productDescription,
           quantity: orderData.quantity,
           price: orderData.price,
-          network: chainId === 1 ? "mainnet" : chainId === 11155111 ? "sepolia" : "unknown",
+          network:
+            chainId === 1
+              ? "mainnet"
+              : chainId === 11155111
+              ? "sepolia"
+              : chainId === 84532
+              ? "base-sepolia"
+              : "unknown",
         });
       } catch (error: any) {
         console.error("Failed to create order:", error);
@@ -151,7 +165,8 @@ export default function DashboardPage() {
         id: Date.now().toString(),
         orderNumber: `ORD-${String(orders.length + 1).padStart(3, "0")}`,
         buyer: address,
-        seller: orderData.seller || "0x0000000000000000000000000000000000000000",
+        seller:
+          orderData.seller || "0x0000000000000000000000000000000000000000",
         productName: orderData.productName,
         productDescription: orderData.productDescription,
         quantity: orderData.quantity,
@@ -160,7 +175,14 @@ export default function DashboardPage() {
         status: "pending",
         createdAt: Math.floor(Date.now() / 1000),
         updatedAt: Math.floor(Date.now() / 1000),
-        network: chainId === 1 ? "mainnet" : chainId === 11155111 ? "sepolia" : "unknown",
+        network:
+          chainId === 1
+            ? "mainnet"
+            : chainId === 11155111
+            ? "sepolia"
+            : chainId === 84532
+            ? "base-sepolia"
+            : "unknown",
       };
 
       setOrders([newOrder, ...orders]);
@@ -170,8 +192,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (isCreated) {
-      alert("Order created on blockchain successfully!");
       setIsCreateModalOpen(false);
+      // Orders will be refetched automatically via react-query
     }
   }, [isCreated]);
 
@@ -233,18 +255,22 @@ export default function DashboardPage() {
                 {isCreating ? "Creating..." : "+ Create Order"}
               </button>
             </div>
-            
+
             {/* Contract Status */}
             {useContract && contractAddress ? (
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-sm">
                 <span>✓</span>
                 <span>Connected to smart contract</span>
-                <code className="text-xs ml-2">{contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}</code>
+                <code className="text-xs ml-2">
+                  {contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}
+                </code>
               </div>
             ) : (
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-sm">
                 <span>⚠</span>
-                <span>Using mock data - Contract not deployed on this network</span>
+                <span>
+                  Using mock data - Contract not deployed on this network
+                </span>
               </div>
             )}
           </div>

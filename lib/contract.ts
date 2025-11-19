@@ -8,6 +8,7 @@ import { OrderTrackingABI } from "./abis/OrderTracking";
 export const CONTRACT_ADDRESSES: Record<number, Address> = {
   1: "0x0000000000000000000000000000000000000000", // Mainnet - Update after deployment
   11155111: "0x0000000000000000000000000000000000000000", // Sepolia - Update after deployment
+  84532: "0x0000000000000000000000000000000000000000", // Base Sepolia - Update after deployment
   137: "0x0000000000000000000000000000000000000000", // Polygon - Update after deployment
   42161: "0x0000000000000000000000000000000000000000", // Arbitrum - Update after deployment
 };
