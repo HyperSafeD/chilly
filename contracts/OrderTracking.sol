@@ -7,7 +7,6 @@ pragma solidity ^0.8.20;
  * @author Chilly Team
  */
 contract OrderTracking {
-    
     enum OrderStatus {
         Pending,
         Confirmed,
@@ -73,8 +72,8 @@ contract OrderTracking {
     // Modifiers
     modifier onlyOrderParticipant(uint256 _orderId) {
         require(
-            orders[_orderId].customer == msg.sender || 
-            orders[_orderId].merchant == msg.sender,
+            orders[_orderId].customer == msg.sender ||
+                orders[_orderId].merchant == msg.sender,
             "Not authorized"
         );
         _;
@@ -99,10 +98,10 @@ contract OrderTracking {
         require(_merchant != msg.sender, "Cannot create order for yourself");
         require(_amount > 0, "Amount must be greater than 0");
         require(bytes(_productName).length > 0, "Product name required");
-        
+
         orderCounter++;
         uint256 orderId = orderCounter;
-        
+
         orders[orderId] = Order({
             id: orderId,
             customer: msg.sender,
@@ -122,12 +121,14 @@ contract OrderTracking {
         merchantOrders[_merchant].push(orderId);
 
         // Add initial history entry
-        orderHistory[orderId].push(OrderUpdate({
-            status: OrderStatus.Pending,
-            timestamp: block.timestamp,
-            updatedBy: msg.sender,
-            note: "Order created"
-        }));
+        orderHistory[orderId].push(
+            OrderUpdate({
+                status: OrderStatus.Pending,
+                timestamp: block.timestamp,
+                updatedBy: msg.sender,
+                note: "Order created"
+            })
+        );
 
         emit OrderCreated(
             orderId,
@@ -150,12 +151,12 @@ contract OrderTracking {
         string memory _note
     ) external orderExists(_orderId) onlyOrderParticipant(_orderId) {
         Order storage order = orders[_orderId];
-        
+
         require(
             order.status != OrderStatus.Cancelled,
             "Cannot update cancelled order"
         );
-        
+
         require(
             order.status != OrderStatus.Delivered,
             "Cannot update delivered order"
@@ -164,12 +165,14 @@ contract OrderTracking {
         order.status = _newStatus;
         order.updatedAt = block.timestamp;
 
-        orderHistory[_orderId].push(OrderUpdate({
-            status: _newStatus,
-            timestamp: block.timestamp,
-            updatedBy: msg.sender,
-            note: _note
-        }));
+        orderHistory[_orderId].push(
+            OrderUpdate({
+                status: _newStatus,
+                timestamp: block.timestamp,
+                updatedBy: msg.sender,
+                note: _note
+            })
+        );
 
         emit OrderUpdated(_orderId, _newStatus, msg.sender, block.timestamp);
     }
@@ -182,17 +185,21 @@ contract OrderTracking {
         string memory _trackingNumber
     ) external orderExists(_orderId) onlyOrderParticipant(_orderId) {
         require(bytes(_trackingNumber).length > 0, "Tracking number required");
-        
+
         Order storage order = orders[_orderId];
         order.trackingNumber = _trackingNumber;
         order.updatedAt = block.timestamp;
 
-        orderHistory[_orderId].push(OrderUpdate({
-            status: order.status,
-            timestamp: block.timestamp,
-            updatedBy: msg.sender,
-            note: string(abi.encodePacked("Tracking number added: ", _trackingNumber))
-        }));
+        orderHistory[_orderId].push(
+            OrderUpdate({
+                status: order.status,
+                timestamp: block.timestamp,
+                updatedBy: msg.sender,
+                note: string(
+                    abi.encodePacked("Tracking number added: ", _trackingNumber)
+                )
+            })
+        );
     }
 
     /**
@@ -203,12 +210,12 @@ contract OrderTracking {
         string memory _reason
     ) external orderExists(_orderId) onlyOrderParticipant(_orderId) {
         Order storage order = orders[_orderId];
-        
+
         require(
             order.status != OrderStatus.Delivered,
             "Cannot cancel delivered order"
         );
-        
+
         require(
             order.status != OrderStatus.Cancelled,
             "Order already cancelled"
@@ -217,12 +224,14 @@ contract OrderTracking {
         order.status = OrderStatus.Cancelled;
         order.updatedAt = block.timestamp;
 
-        orderHistory[_orderId].push(OrderUpdate({
-            status: OrderStatus.Cancelled,
-            timestamp: block.timestamp,
-            updatedBy: msg.sender,
-            note: _reason
-        }));
+        orderHistory[_orderId].push(
+            OrderUpdate({
+                status: OrderStatus.Cancelled,
+                timestamp: block.timestamp,
+                updatedBy: msg.sender,
+                note: _reason
+            })
+        );
 
         emit OrderCancelled(_orderId, msg.sender, block.timestamp);
     }
@@ -230,46 +239,36 @@ contract OrderTracking {
     /**
      * @dev Get order details
      */
-    function getOrder(uint256 _orderId) 
-        external 
-        view 
-        orderExists(_orderId) 
-        returns (Order memory) 
-    {
+    function getOrder(
+        uint256 _orderId
+    ) external view orderExists(_orderId) returns (Order memory) {
         return orders[_orderId];
     }
 
     /**
      * @dev Get order history
      */
-    function getOrderHistory(uint256 _orderId)
-        external
-        view
-        orderExists(_orderId)
-        returns (OrderUpdate[] memory)
-    {
+    function getOrderHistory(
+        uint256 _orderId
+    ) external view orderExists(_orderId) returns (OrderUpdate[] memory) {
         return orderHistory[_orderId];
     }
 
     /**
      * @dev Get all orders for a customer
      */
-    function getCustomerOrders(address _customer)
-        external
-        view
-        returns (uint256[] memory)
-    {
+    function getCustomerOrders(
+        address _customer
+    ) external view returns (uint256[] memory) {
         return customerOrders[_customer];
     }
 
     /**
      * @dev Get all orders for a merchant
      */
-    function getMerchantOrders(address _merchant)
-        external
-        view
-        returns (uint256[] memory)
-    {
+    function getMerchantOrders(
+        address _merchant
+    ) external view returns (uint256[] memory) {
         return merchantOrders[_merchant];
     }
 
@@ -283,31 +282,27 @@ contract OrderTracking {
     /**
      * @dev Get multiple orders at once (for efficiency)
      */
-    function getOrders(uint256[] memory _orderIds)
-        external
-        view
-        returns (Order[] memory)
-    {
+    function getOrders(
+        uint256[] memory _orderIds
+    ) external view returns (Order[] memory) {
         Order[] memory result = new Order[](_orderIds.length);
-        
+
         for (uint256 i = 0; i < _orderIds.length; i++) {
             if (orders[_orderIds[i]].exists) {
                 result[i] = orders[_orderIds[i]];
             }
         }
-        
+
         return result;
     }
 
     /**
      * @dev Check if an address is involved in an order
      */
-    function isOrderParticipant(uint256 _orderId, address _address)
-        external
-        view
-        orderExists(_orderId)
-        returns (bool)
-    {
+    function isOrderParticipant(
+        uint256 _orderId,
+        address _address
+    ) external view orderExists(_orderId) returns (bool) {
         Order memory order = orders[_orderId];
         return (order.customer == _address || order.merchant == _address);
     }
