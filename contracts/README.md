@@ -1,65 +1,69 @@
 # Chilly Smart Contracts
 
-Smart contracts for the Chilly decentralized order tracking system.
+This directory contains the Solidity smart contracts for the Chilly decentralized order tracking dApp.
 
 ## 📋 Contract Overview
 
 ### OrderTracking.sol
 
-Main contract for creating and managing orders on-chain with the following features:
+The main smart contract that handles all order-related operations on-chain.
 
-- ✅ Create orders with product details and shipping information
-- ✅ Update order status (Pending → Confirmed → Processing → Shipped → Delivered)
-- ✅ Add tracking numbers
-- ✅ Cancel orders (before delivery)
-- ✅ Complete order history tracking
-- ✅ Query orders by customer or merchant
-- ✅ Batch operations for efficiency
-- ✅ Event emission for real-time updates
+**Key Features:**
 
-### Order Statuses
+- ✅ Order creation with escrow payment
+- ✅ Order status management (Pending → Confirmed → Processing → Shipped → Delivered)
+- ✅ Dispute resolution system
+- ✅ Automatic payment release on delivery
+- ✅ Automatic refund on cancellation
+- ✅ Platform fee management
+- ✅ Multi-network support
+- ✅ Gas-optimized design
 
-```solidity
-enum OrderStatus {
-    Pending,    // 0 - Order created, awaiting confirmation
-    Confirmed,  // 1 - Order confirmed by merchant
-    Processing, // 2 - Order being prepared
-    Shipped,    // 3 - Order shipped with tracking
-    Delivered,  // 4 - Order delivered to customer
-    Cancelled,  // 5 - Order cancelled
-    Disputed    // 6 - Order in dispute
-}
+## 🏗️ Contract Architecture
+
+### Order Lifecycle
+
+```
+Pending → Confirmed → Processing → Shipped → Delivered
+   ↓         ↓            ↓
+Cancelled  Cancelled   Disputed
 ```
 
-## 🚀 Setup
+### Payment Flow
 
-### Prerequisites
+1. **Order Creation**: Buyer sends payment to contract (held in escrow)
+2. **Platform Fee**: Fee is deducted and sent to contract owner
+3. **Delivery**: Payment is automatically released to seller
+4. **Cancellation**: Full refund (minus platform fee) to buyer
 
-- Node.js 18+
-- npm or yarn
-
-### Installation
+## 📦 Installation
 
 ```bash
 cd contracts
 npm install
 ```
 
-### Environment Setup
+## 🔧 Configuration
 
-Create a `.env` file:
+Create a `.env` file in the `contracts` directory:
 
 ```env
+# Private key of deployer account (NEVER commit this!)
 PRIVATE_KEY=your_private_key_here
-SEPOLIA_RPC_URL=https://rpc.sepolia.org
+
+# RPC URLs
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+MAINNET_RPC_URL=https://mainnet.infura.io/v3/YOUR_PROJECT_ID
 POLYGON_RPC_URL=https://polygon-rpc.com
 ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
+
+# API Keys for contract verification
 ETHERSCAN_API_KEY=your_etherscan_api_key
 POLYGONSCAN_API_KEY=your_polygonscan_api_key
 ARBISCAN_API_KEY=your_arbiscan_api_key
 ```
 
-## 🔨 Development
+## 🚀 Deployment
 
 ### Compile Contracts
 
@@ -67,162 +71,153 @@ ARBISCAN_API_KEY=your_arbiscan_api_key
 npm run compile
 ```
 
-### Run Tests
+### Deploy to Sepolia (Testnet)
+
+```bash
+npm run deploy:sepolia
+```
+
+### Deploy to Mainnet
+
+```bash
+npm run deploy:mainnet
+```
+
+### Deploy to Polygon
+
+```bash
+npm run deploy:polygon
+```
+
+### Deploy to Arbitrum
+
+```bash
+npm run deploy:arbitrum
+```
+
+## 📝 Contract Functions
+
+### Order Management
+
+- `createOrder()` - Create a new order with payment
+- `confirmOrder()` - Seller confirms the order
+- `updateOrderStatus()` - Update order status
+- `markAsProcessing()` - Mark order as processing
+- `markAsShipped()` - Mark order as shipped
+- `addTrackingNumber()` - Add shipping tracking number
+- `cancelOrder()` - Cancel an order (refunds buyer)
+- `disputeOrder()` - Dispute an order
+
+### View Functions
+
+- `getOrder(uint256 orderId)` - Get order details
+- `getBuyerOrders(address buyer)` - Get all orders for a buyer
+- `getSellerOrders(address seller)` - Get all orders for a seller
+- `getOrders(uint256[] orderIds)` - Get multiple orders
+
+### Admin Functions
+
+- `setPlatformFee(uint256 newFee)` - Update platform fee (owner only)
+- `setMinOrderValue(uint256 newValue)` - Update minimum order value (owner only)
+- `transferOwnership(address newOwner)` - Transfer contract ownership
+
+## 🔐 Security Features
+
+1. **Access Control**: Only authorized parties can update orders
+2. **Status Validation**: Prevents invalid status transitions
+3. **Payment Escrow**: Funds held securely until delivery
+4. **Automatic Refunds**: Cancelled orders automatically refund
+5. **Reentrancy Protection**: Built-in protection against reentrancy attacks
+6. **Input Validation**: All inputs are validated before processing
+
+## 💰 Fee Structure
+
+- **Platform Fee**: Configurable (default: 1% = 100 basis points)
+- **Minimum Order Value**: Configurable (default: 0.001 ETH)
+- **Fee Collection**: Collected at order creation
+- **Refund Policy**: Platform fee is non-refundable
+
+## 📊 Events
+
+The contract emits the following events for off-chain tracking:
+
+- `OrderCreated` - When a new order is created
+- `OrderStatusUpdated` - When order status changes
+- `TrackingNumberAdded` - When tracking number is added
+- `OrderDisputed` - When an order is disputed
+- `OrderCancelled` - When an order is cancelled
+
+## 🧪 Testing
 
 ```bash
 npm test
 ```
 
-### Deploy to Local Network
+## 📚 Contract Addresses
+
+After deployment, update the contract addresses in:
+
+- `lib/contract.ts` - Frontend contract configuration
+
+## 🔍 Verification
+
+Contracts are automatically verified on Etherscan after deployment. Manual verification:
 
 ```bash
-# Start local Hardhat node
-npm run node
-
-# In another terminal, deploy
-npm run deploy
+npx hardhat verify --network sepolia <CONTRACT_ADDRESS> <CONSTRUCTOR_ARGS>
 ```
 
-### Deploy to Testnets/Mainnet
+## 📖 Integration
 
-```bash
-# Deploy to Sepolia testnet
-npm run deploy:sepolia
+### Frontend Integration
 
-# Deploy to Polygon
-npm run deploy:polygon
+1. Import the contract ABI from `lib/abis/OrderTracking.ts`
+2. Use the contract address from `lib/contract.ts`
+3. Use wagmi hooks to interact with the contract
 
-# Deploy to Arbitrum
-npm run deploy:arbitrum
+Example:
+
+```typescript
+import { useWriteContract, useReadContract } from "wagmi";
+import { OrderTrackingABI } from "@/lib/abis/OrderTracking";
+import { getContractAddress } from "@/lib/contract";
+
+// Read order
+const { data: order } = useReadContract({
+  address: getContractAddress(chainId),
+  abi: OrderTrackingABI,
+  functionName: "getOrder",
+  args: [orderId],
+});
+
+// Create order
+const { writeContract } = useWriteContract();
+writeContract({
+  address: getContractAddress(chainId),
+  abi: OrderTrackingABI,
+  functionName: "createOrder",
+  args: [
+    seller,
+    productName,
+    description,
+    quantity,
+    currency,
+    delivery,
+    network,
+    metadata,
+  ],
+  value: parseEther(price),
+});
 ```
 
-### Verify Contract
+## ⚠️ Important Notes
 
-```bash
-npm run verify -- --network sepolia DEPLOYED_CONTRACT_ADDRESS
-```
+1. **Never commit private keys** to version control
+2. **Test thoroughly** on testnets before mainnet deployment
+3. **Verify contracts** on block explorers for transparency
+4. **Monitor gas costs** - optimize if needed
+5. **Keep contract owner key secure** - use multisig for production
 
-## 📝 Contract Functions
+## 📄 License
 
-### Create Order
-
-```solidity
-function createOrder(
-    address _merchant,
-    string memory _productName,
-    string memory _description,
-    uint256 _amount,
-    string memory _shippingAddress
-) external returns (uint256)
-```
-
-### Update Order Status
-
-```solidity
-function updateOrderStatus(
-    uint256 _orderId,
-    OrderStatus _newStatus,
-    string memory _note
-) external
-```
-
-### Add Tracking Number
-
-```solidity
-function addTrackingNumber(
-    uint256 _orderId,
-    string memory _trackingNumber
-) external
-```
-
-### Cancel Order
-
-```solidity
-function cancelOrder(
-    uint256 _orderId,
-    string memory _reason
-) external
-```
-
-### View Functions
-
-```solidity
-// Get single order
-function getOrder(uint256 _orderId) external view returns (Order memory)
-
-// Get order history
-function getOrderHistory(uint256 _orderId) external view returns (OrderUpdate[] memory)
-
-// Get customer orders
-function getCustomerOrders(address _customer) external view returns (uint256[] memory)
-
-// Get merchant orders
-function getMerchantOrders(address _merchant) external view returns (uint256[] memory)
-
-// Get multiple orders at once
-function getOrders(uint256[] memory _orderIds) external view returns (Order[] memory)
-
-// Get total orders
-function getTotalOrders() external view returns (uint256)
-```
-
-## 🔐 Security Features
-
-- ✅ Access control (only order participants can update)
-- ✅ Status validation (prevent invalid state transitions)
-- ✅ Immutable order history
-- ✅ Event emission for transparency
-- ✅ Address validation
-- ✅ No external dependencies (except OpenZeppelin if needed)
-
-## 📊 Events
-
-```solidity
-event OrderCreated(
-    uint256 indexed orderId,
-    address indexed customer,
-    address indexed merchant,
-    string productName,
-    uint256 amount,
-    uint256 timestamp
-);
-
-event OrderUpdated(
-    uint256 indexed orderId,
-    OrderStatus newStatus,
-    address indexed updatedBy,
-    uint256 timestamp
-);
-
-event OrderCancelled(
-    uint256 indexed orderId,
-    address indexed cancelledBy,
-    uint256 timestamp
-);
-```
-
-## 🌐 Deployed Contracts
-
-Deployment information is saved in `./deployments/` directory after each deployment.
-
-### Sepolia Testnet
-```
-Address: [To be deployed]
-Explorer: https://sepolia.etherscan.io/address/
-```
-
-### Polygon
-```
-Address: [To be deployed]
-Explorer: https://polygonscan.com/address/
-```
-
-### Arbitrum
-```
-Address: [To be deployed]
-Explorer: https://arbiscan.io/address/
-```
-
-## 📜 License
-
-MIT
+MIT License - See LICENSE file for details

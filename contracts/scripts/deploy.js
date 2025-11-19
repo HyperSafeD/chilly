@@ -3,27 +3,46 @@ const hre = require("hardhat");
 async function main() {
   console.log("Deploying OrderTracking contract...");
 
+  // Contract parameters
+  const platformFeeBps = 100; // 1% platform fee
+  const minOrderValue = hre.ethers.parseEther("0.001"); // 0.001 ETH minimum
+
+  // Get the contract factory
   const OrderTracking = await hre.ethers.getContractFactory("OrderTracking");
-  const orderTracking = await OrderTracking.deploy();
+
+  // Deploy the contract
+  const orderTracking = await OrderTracking.deploy(
+    platformFeeBps,
+    minOrderValue
+  );
 
   await orderTracking.waitForDeployment();
 
   const address = await orderTracking.getAddress();
-  
-  console.log(`OrderTracking deployed to: ${address}`);
-  console.log(`Network: ${hre.network.name}`);
-  console.log(`Chain ID: ${(await hre.ethers.provider.getNetwork()).chainId}`);
+  console.log("OrderTracking deployed to:", address);
+  console.log(
+    "Platform Fee:",
+    platformFeeBps,
+    "bps (",
+    platformFeeBps / 100,
+    "%)"
+  );
+  console.log(
+    "Minimum Order Value:",
+    hre.ethers.formatEther(minOrderValue),
+    "ETH"
+  );
 
-  // Wait for a few block confirmations before verifying
-  if (hre.network.name !== "hardhat" && hre.network.name !== "localhost") {
+  // Verify contract on Etherscan (if on a testnet/mainnet)
+  if (process.env.ETHERSCAN_API_KEY && hre.network.name !== "hardhat") {
     console.log("Waiting for block confirmations...");
-    await orderTracking.deploymentTransaction().wait(5);
-    
-    console.log("Verifying contract on block explorer...");
+    await orderTracking.deploymentTransaction().wait(6);
+
+    console.log("Verifying contract on Etherscan...");
     try {
       await hre.run("verify:verify", {
         address: address,
-        constructorArguments: [],
+        constructorArguments: [platformFeeBps, minOrderValue],
       });
       console.log("Contract verified successfully!");
     } catch (error) {
@@ -31,28 +50,11 @@ async function main() {
     }
   }
 
-  // Save deployment info
-  const fs = require("fs");
-  const deploymentInfo = {
-    network: hre.network.name,
-    chainId: (await hre.ethers.provider.getNetwork()).chainId.toString(),
-    address: address,
-    deployer: (await hre.ethers.getSigners())[0].address,
-    timestamp: new Date().toISOString(),
-    blockNumber: await hre.ethers.provider.getBlockNumber(),
-  };
-
-  const deploymentsDir = "./deployments";
-  if (!fs.existsSync(deploymentsDir)) {
-    fs.mkdirSync(deploymentsDir);
-  }
-
-  fs.writeFileSync(
-    `${deploymentsDir}/${hre.network.name}.json`,
-    JSON.stringify(deploymentInfo, null, 2)
-  );
-
-  console.log(`Deployment info saved to ${deploymentsDir}/${hre.network.name}.json`);
+  console.log("\n=== Deployment Summary ===");
+  console.log("Contract Address:", address);
+  console.log("Network:", hre.network.name);
+  console.log("Platform Fee:", platformFeeBps, "basis points");
+  console.log("Min Order Value:", hre.ethers.formatEther(minOrderValue), "ETH");
 }
 
 main()
