@@ -12,6 +12,7 @@ interface CreateOrderModalProps {
     quantity: number;
     price: string;
     currency: string;
+    seller?: string;
   }) => void;
 }
 
@@ -27,6 +28,7 @@ export function CreateOrderModal({
     quantity: 1,
     price: "",
     currency: "ETH",
+    seller: "",
   });
 
   if (!isOpen) return null;
@@ -43,8 +45,9 @@ export function CreateOrderModal({
       quantity: 1,
       price: "",
       currency: "ETH",
+      seller: "",
     });
-    onClose();
+    // Don't close automatically - let parent handle it after transaction
   };
 
   return (
@@ -151,6 +154,24 @@ export function CreateOrderModal({
             />
             <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
               Enter price in {formData.currency}
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-50 mb-2">
+              Seller Address (Optional)
+            </label>
+            <input
+              type="text"
+              value={formData.seller}
+              onChange={(e) =>
+                setFormData({ ...formData, seller: e.target.value })
+              }
+              className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-orange-500 font-mono text-sm"
+              placeholder="0x..."
+            />
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Leave empty to use zero address (for testing)
             </p>
           </div>
 
