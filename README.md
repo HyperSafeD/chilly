@@ -3,21 +3,53 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-16.0-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![Solidity](https://img.shields.io/badge/Solidity-0.8.20-blue)](https://soliditylang.org/)
 
-**Chilly** is an open-source decentralized application (dApp) built on Next.js that helps businesses and individuals keep track of orders on the blockchain. Built with modern Web3 technologies for transparency, immutability, and trustless order management.
+**Chilly** is a comprehensive decentralized application (dApp) with smart contracts for on-chain order tracking and a modern Next.js frontend. Built with transparency, immutability, and Web3 integration.
+
+## 📁 Project Structure
+
+```
+chilly/
+├── contracts/              # Smart Contract Layer (Hardhat)
+│   ├── contracts/          # Solidity contracts
+│   ├── scripts/            # Deployment scripts
+│   ├── test/               # Contract tests
+│   └── README.md           # Contract documentation
+│
+└── frontend/               # Frontend Layer (Next.js)
+    ├── app/                # Next.js App Router pages
+    │   ├── dashboard/      # Dashboard & order management
+    │   ├── analytics/      # Analytics page
+    │   └── ...
+    ├── components/         # React components
+    ├── lib/                # Utilities & Web3 config
+    └── public/             # Static assets
+```
 
 ## ✨ Features
 
-- 🔗 **Web3 Integration** - Connect with MetaMask, WalletConnect, and other popular wallets via Reown AppKit
-- 📦 **Order Tracking** - Create, update, and monitor orders on the blockchain with full transparency
-- 🔐 **Decentralized Storage** - Immutable order records stored on-chain for trustless verification
+### Smart Contract Features
+- 📦 **Order Creation** - Create immutable order records on-chain
+- 🔄 **Status Updates** - Track order lifecycle (Pending → Confirmed → Processing → Shipped → Delivered)
+- 🔗 **Tracking Numbers** - Add and update shipping tracking information
+- 📝 **Order History** - Complete audit trail with timestamps and actors
+- ❌ **Order Cancellation** - Cancel orders before delivery with reason tracking
+- 🔐 **Access Control** - Only order participants can update orders
+- 📊 **Batch Operations** - Efficient queries for multiple orders
+- 🔔 **Events** - Real-time blockchain events for all state changes
+
+### Frontend Features
+- 🔗 **Web3 Integration** - Reown AppKit with 300+ wallet support (MetaMask, WalletConnect, etc.)
+- 📧 **Email Login** - Passwordless authentication without a wallet
+- 🌐 **Social Logins** - Google, X, GitHub, Discord, Apple
+- 📦 **Order Tracking** - Create, update, and monitor orders with full transparency
 - 📊 **Interactive Dashboard** - Comprehensive dashboard with order statistics, filtering, and real-time updates
-- 🌐 **Multi-chain Support** - Works across Ethereum Mainnet, Sepolia, Polygon, and Arbitrum networks
-- 🎨 **Modern UI** - Beautiful, responsive interface built with Tailwind CSS and dark mode support
-- 🔍 **Advanced Filtering** - Filter orders by status, network, and search across all fields
-- 📈 **Order Analytics** - Comprehensive analytics dashboard with charts and insights
+- 🌍 **Multi-chain Support** - Ethereum Mainnet, Sepolia, Polygon, Arbitrum
+- 🎨 **Modern UI** - Beautiful, responsive interface with Tailwind CSS and dark mode
+- 🔍 **Advanced Filtering** - Filter by status, network, search across all fields
+- 📈 **Order Analytics** - Analytics dashboard with charts and insights
 - 📄 **Order Details** - Detailed view for each order with blockchain information
-- 🔄 **Status Updates** - Update order status with real-time changes
 - 📤 **Data Export** - Export orders to JSON or CSV format
 - 🔗 **Block Explorer Integration** - Direct links to view transactions on Etherscan
 - ⛓️ **Smart Contract Integration** - Fully functional Solidity contract for on-chain order management
@@ -30,37 +62,59 @@
 
 - Node.js 18.x or higher
 - npm, yarn, or pnpm
-- A Web3 wallet (MetaMask recommended)
+- A Web3 wallet (MetaMask recommended) or email for login
+- Reown Project ID from [cloud.reown.com](https://cloud.reown.com)
+- Private key (for contract deployment to testnets/mainnet)
 
-### Installation
-
-1. Clone the repository:
+### 1. Smart Contracts Setup
 
 ```bash
-git clone https://github.com/HyperSafeD/chilly.git
-cd chilly
+cd contracts
+npm install
+
+# Compile contracts
+npm run compile
+
+# Run tests
+npm test
+
+# Deploy to testnet
+npm run deploy:sepolia
 ```
 
-2. Install dependencies:
+See [contracts/README.md](./contracts/README.md) for detailed documentation.
+
+### 2. Frontend Setup
 
 ```bash
+cd frontend
 npm install
 ```
 
-3. Create a `.env.local` file in the root directory:
+Create `.env.local` in the frontend folder:
 
 ```env
 # Get your Project ID from https://cloud.reown.com
 NEXT_PUBLIC_PROJECT_ID=your_project_id_here
 
+# Contract addresses (after deployment)
+NEXT_PUBLIC_CONTRACT_ADDRESS_SEPOLIA=deployed_contract_address
+NEXT_PUBLIC_CONTRACT_ADDRESS_POLYGON=deployed_contract_address
+NEXT_PUBLIC_CONTRACT_ADDRESS_ARBITRUM=deployed_contract_address
+
 # Optional: Configure default network
 NEXT_PUBLIC_CHAIN_ID=1
-NEXT_PUBLIC_RPC_URL=https://mainnet.infura.io/v3/YOUR_PROJECT_ID
 ```
 
-> **Note**: You need to create a free account at [Reown Cloud](https://cloud.reown.com) to get your Project ID for wallet connections.
+> **Note**: Create a free account at [Reown Cloud](https://cloud.reown.com) to get your Project ID.
 
-4. Run the development server:
+Run the development server:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) and connect your wallet!
 
 ```bash
 npm run dev

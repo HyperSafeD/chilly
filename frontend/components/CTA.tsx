@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import React from "react";
+import React from 'react'
 
 export function CTA() {
   return (
@@ -11,8 +11,7 @@ export function CTA() {
             Ready to Get Started?
           </h2>
           <p className="text-lg sm:text-xl text-white/90 mb-10">
-            Join thousands of businesses already using Chilly to track and
-            manage their orders on the blockchain.
+            Join thousands of businesses already using Chilly to track and manage their orders on the blockchain.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <appkit-button />
@@ -28,5 +27,5 @@ export function CTA() {
         </div>
       </div>
     </section>
-  );
+  )
 }

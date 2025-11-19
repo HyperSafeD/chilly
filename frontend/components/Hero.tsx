@@ -52,13 +52,13 @@ export function Hero() {
             ) : (
               <>
                 <a
-                  href="#dashboard"
+                  href="/dashboard"
                   className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
                 >
                   Go to Dashboard
                 </a>
                 <a
-                  href="#create-order"
+                  href="/dashboard"
                   className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                 >
                   Create Order

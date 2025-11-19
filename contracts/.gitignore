@@ -1,0 +1,23 @@
+# Hardhat
+node_modules
+cache
+artifacts
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist
+build
