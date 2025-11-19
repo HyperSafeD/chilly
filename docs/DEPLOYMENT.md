@@ -17,6 +17,7 @@ This guide will help you deploy the Chilly smart contract to Base Sepolia testne
 3. Request testnet ETH (you'll need some for gas fees)
 
 Alternatively, use other Base Sepolia faucets:
+
 - [QuickNode Base Sepolia Faucet](https://faucet.quicknode.com/base/sepolia)
 - [Alchemy Base Sepolia Faucet](https://www.alchemy.com/faucets/base-sepolia)
 
@@ -71,6 +72,7 @@ npm run deploy:base-sepolia
 ```
 
 The deployment script will:
+
 1. Deploy the contract with:
    - Platform fee: 100 basis points (1%)
    - Minimum order value: 0.001 ETH
@@ -118,6 +120,7 @@ npx hardhat verify --network baseSepolia 0xYourContractAddress 100 1000000000000
 ```
 
 Where:
+
 - `0xYourContractAddress` is your deployed contract address
 - `100` is the platform fee in basis points
 - `1000000000000000` is the minimum order value in wei (0.001 ETH)
@@ -134,6 +137,7 @@ Where:
 ### View on Basescan
 
 After deployment, view your contract on:
+
 - **Basescan**: https://sepolia-explorer.base.org/address/0xYourContractAddress
 
 ### Verify Contract Source Code
@@ -165,7 +169,8 @@ After deployment, view your contract on:
 
 ### Error: Contract verification failed
 
-**Solution**: 
+**Solution**:
+
 1. Check your API key is correct
 2. Wait a few minutes and try manual verification
 3. Ensure constructor arguments match exactly
@@ -177,6 +182,7 @@ After deployment, view your contract on:
 ### Contract not showing in frontend
 
 **Solution**:
+
 1. Verify contract address is correct in `lib/contract.ts`
 2. Ensure you're connected to Base Sepolia network
 3. Check browser console for errors
@@ -185,6 +191,7 @@ After deployment, view your contract on:
 ## Gas Estimates
 
 **Base Sepolia** (typically lower gas than Ethereum):
+
 - Contract deployment: ~2,000,000 gas (~0.01 ETH at current prices)
 - Create order: ~150,000 gas
 - Update status: ~50,000 gas
@@ -214,6 +221,7 @@ When ready for production on Base Mainnet:
 ## Support
 
 For issues or questions:
+
 - Check [contracts/README.md](../contracts/README.md)
 - Review [SMART_CONTRACT.md](./SMART_CONTRACT.md)
 - Open an issue on GitHub
