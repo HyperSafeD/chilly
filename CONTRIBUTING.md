@@ -13,6 +13,7 @@ If you find a bug, please open an issue with:
 - Expected vs actual behavior
 - Screenshots if applicable
 - Your environment (browser, OS, Node version)
+nice job
 
 ### Suggesting Features
 
