@@ -5,6 +5,7 @@ import { Web3Provider } from "@/lib/Web3Provider";
 import { NotificationProvider } from "@/lib/NotificationContext";
 import { OrderEventListener } from "@/lib/orderEventListener";
 import { NotificationToast } from "@/components/notifications/NotificationToast";
+import { ThemeProvider } from "@/lib/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,17 +28,36 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme');
+                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (theme === 'dark' || (!theme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Web3Provider>
-          <NotificationProvider>
-            <OrderEventListener />
-            {children}
-            <NotificationToast />
-          </NotificationProvider>
-        </Web3Provider>
+        <ThemeProvider>
+          <Web3Provider>
+            <NotificationProvider>
+              <OrderEventListener />
+              {children}
+              <NotificationToast />
+            </NotificationProvider>
+          </Web3Provider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -11,6 +11,7 @@ export const CONTRACT_ADDRESSES: Record<number, Address> = {
   84532: "0x52809f71eF62f367AA7eD1596fd7d70C91c15ce3", // Base Sepolia
   137: "0x0000000000000000000000000000000000000000", // Polygon - Update after deployment
   42161: "0x0000000000000000000000000000000000000000", // Arbitrum - Update after deployment
+  44787: "0x0000000000000000000000000000000000000000", // Celo Alfajores (Testnet) - Update after deployment
 };
 
 /**

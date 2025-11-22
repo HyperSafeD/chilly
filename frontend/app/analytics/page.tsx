@@ -68,7 +68,7 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="min-h-screen bg-zinc-50 dark:bg-black">
       <Header />
       <main className="pt-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
