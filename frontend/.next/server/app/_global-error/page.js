@@ -1,0 +1,11 @@
+var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/_global-error/page.js")
+R.c("server/chunks/ssr/[root-of-the-server]__f3a1bdb0._.js")
+R.c("server/chunks/ssr/Desktop_walletconnect_chilly_8da41e23._.js")
+R.c("server/chunks/ssr/89298_next_dist_ddf4b51b._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__137065e0._.js")
+R.c("server/chunks/ssr/89298_f40f8f29._.js")
+R.c("server/chunks/ssr/89298_next_dist_b79a2ddd._.js")
+R.c("server/chunks/ssr/Desktop_walletconnect_chilly_frontend_app_72d085f3._.js")
+R.c("server/chunks/ssr/11481_chilly_frontend__next-internal_server_app__global-error_page_actions_159a610e.js")
+R.m(354421)
+module.exports=R.m(354421).exports

@@ -1,0 +1,3 @@
+module.exports=[841345,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(686582);a.n(d("[project]/Desktop/walletconnect/chilly/node_modules/next/dist/client/components/builtin/global-error.js <module evaluation>"))},56323,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(686582);a.n(d("[project]/Desktop/walletconnect/chilly/node_modules/next/dist/client/components/builtin/global-error.js"))},356773,a=>{"use strict";a.i(841345);var b=a.i(56323);a.n(b)}];
+
+//# sourceMappingURL=89298_next_dist_client_components_builtin_global-error_c3afcbc6.js.map

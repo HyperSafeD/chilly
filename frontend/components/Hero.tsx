@@ -7,7 +7,7 @@ export function Hero() {
   const { isConnected } = useAccount();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-zinc-50 to-white dark:from-black dark:to-zinc-900 pt-16">
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-zinc-50 via-white to-zinc-50 dark:from-zinc-950 dark:via-black dark:to-zinc-950 pt-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
         <div className="text-center max-w-4xl mx-auto">
           {/* Badge */}

@@ -153,6 +153,8 @@ export default function DashboardPage() {
               ? "sepolia"
               : chainId === 84532
               ? "base-sepolia"
+              : chainId === 44787
+              ? "celo-alfajores"
               : "unknown",
         });
       } catch (error: any) {
@@ -182,6 +184,8 @@ export default function DashboardPage() {
             ? "sepolia"
             : chainId === 84532
             ? "base-sepolia"
+            : chainId === 44787
+            ? "celo-alfajores"
             : "unknown",
       };
 
@@ -232,10 +236,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black flex">
+    <div className="min-h-screen bg-zinc-50 dark:bg-black flex">
       <Sidebar />
       <main className="flex-1 lg:ml-64">
-        <div className="p-8">
+        <div className="p-8 min-h-screen">
           {/* Header */}
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4">

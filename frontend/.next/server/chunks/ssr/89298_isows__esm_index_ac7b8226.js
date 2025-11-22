@@ -1,0 +1,3 @@
+module.exports=[840558,a=>{"use strict";var b=a.i(231848),c=a.i(252513),d=a.i(600092),e=a.i(675742),f=a.i(951721),g=a.i(109942);a.s(["Receiver",()=>d.default,"Sender",()=>e.default,"WebSocket",()=>f.default,"WebSocketServer",()=>g.default,"createWebSocketStream",()=>c.default,"default",()=>b.default],909137);var h=a.i(909137);let i=(()=>{try{if("undefined"!=typeof WebSocket)return WebSocket;if(void 0!==a.g.WebSocket)return a.g.WebSocket;if(void 0!==window.WebSocket)return window.WebSocket;if(void 0!==self.WebSocket)return self.WebSocket;throw Error("`WebSocket` is not supported in this environment")}catch{if(h.WebSocket)return h.WebSocket;return h}})();a.s(["WebSocket",0,i],840558)}];
+
+//# sourceMappingURL=89298_isows__esm_index_ac7b8226.js.map

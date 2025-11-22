@@ -19,7 +19,7 @@ const statusOptions: Array<OrderStatus | "all"> = [
   "disputed",
 ];
 
-const networkOptions = ["all", "mainnet", "sepolia", "polygon", "arbitrum"];
+const networkOptions = ["all", "mainnet", "sepolia", "polygon", "arbitrum", "base-sepolia", "celo-alfajores"];
 
 export function OrderFiltersComponent({
   filters,

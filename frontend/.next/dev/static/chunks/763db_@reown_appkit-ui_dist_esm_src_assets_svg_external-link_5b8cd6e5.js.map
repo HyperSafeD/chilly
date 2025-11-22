@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"file":"turbopack:///[project]/Desktop/walletconnect/chilly/node_modules/@walletconnect/ethereum-provider/node_modules/@reown/appkit-ui/dist/esm/src/assets/svg/external-link.js","sources":["file:///C:/Users/MSI/Desktop/walletconnect/chilly/node_modules/%40walletconnect/ethereum-provider/node_modules/%40reown/appkit-ui/src/assets/svg/external-link.ts"],"sourcesContent":["unable to read source [project]/Desktop/walletconnect/chilly/node_modules/@walletconnect/ethereum-provider/node_modules/@reown/appkit-ui/src/assets/svg/external-link.ts"],"names":[],"mappings":";;;;;AAAA,OAAO,EAAE,GAAG,EAAE,MAAM,KAAK,CAAA;;AAElB,MAAM,eAAe,GAAG,yMAAG,CAAA;;;;;;;OAO3B,CAAA","debugId":null}}]
+}

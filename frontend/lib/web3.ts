@@ -6,6 +6,7 @@ import {
   polygon,
   arbitrum,
   baseSepolia,
+  celoAlfajores,
 } from "@reown/appkit/networks";
 import { cookieStorage, createStorage } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
@@ -41,7 +42,7 @@ export const wagmiAdapter = new WagmiAdapter({
   }),
   ssr: true,
   projectId: projectId || defaultProjectId,
-  networks: [mainnet, sepolia, polygon, arbitrum, baseSepolia],
+  networks: [mainnet, sepolia, polygon, arbitrum, baseSepolia, celoAlfajores],
 });
 
 export const config = wagmiAdapter.wagmiConfig;
@@ -50,7 +51,7 @@ export const config = wagmiAdapter.wagmiConfig;
 export const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId: projectId || defaultProjectId,
-  networks: [mainnet, sepolia, polygon, arbitrum, baseSepolia],
+  networks: [mainnet, sepolia, polygon, arbitrum, baseSepolia, celoAlfajores],
   defaultNetwork: baseSepolia, // Default to Base Sepolia for testing
   metadata: metadata,
   features: {
