@@ -2,7 +2,6 @@
 
 import React from "react";
 import { NotificationBell } from "./notifications/NotificationBell";
-import { ThemeToggle } from "./ThemeToggle";
 import { useAccount } from "wagmi";
 
 export function Header() {
@@ -52,8 +51,7 @@ export function Header() {
             </a>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
+          <div className="flex items-center gap-4">
             {isConnected && <NotificationBell />}
             <appkit-button />
           </div>
