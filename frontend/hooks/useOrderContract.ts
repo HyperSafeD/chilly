@@ -108,7 +108,9 @@ export function useMyOrders() {
   const transformedOrders: Order[] = React.useMemo(() => {
     if (!orders || !Array.isArray(orders)) return [];
     
-    return orders.map((order: any) => {
+    return orders
+      .filter(validateContractOrder)
+      .map((order: any) => {
       // Get network name from chainId
       const networkName = 
         chainId === 1 ? "mainnet" :
