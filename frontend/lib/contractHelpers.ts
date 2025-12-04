@@ -1,5 +1,5 @@
 import { formatEther, parseEther } from "viem";
-import { ContractOrderStatus } from "./contract";
+import { ContractOrderStatus, contractStatusToAppStatus } from "./contract";
 
 /**
  * Helper functions for contract data transformation
@@ -49,15 +49,6 @@ export function validateContractOrder(order: any): boolean {
  * Get readable status name from contract status
  */
 export function getStatusName(status: ContractOrderStatus | number): string {
-  const statusMap: Record<number, string> = {
-    0: "pending",
-    1: "confirmed",
-    2: "processing",
-    3: "shipped",
-    4: "delivered",
-    5: "cancelled",
-    6: "disputed",
-  };
-  return statusMap[Number(status)] || "unknown";
+  return contractStatusToAppStatus(status as ContractOrderStatus);
 }
 

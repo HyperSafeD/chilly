@@ -79,12 +79,7 @@ export default function OrderDetailPage() {
         quantity: Number(contractOrder.quantity) || 1,
         price: contractOrder.price ? (Number(contractOrder.price) / 1e18).toFixed(4) : "0",
         currency: "ETH",
-        status: contractOrder.status === 0 ? "pending" :
-                contractOrder.status === 1 ? "confirmed" :
-                contractOrder.status === 2 ? "processing" :
-                contractOrder.status === 3 ? "shipped" :
-                contractOrder.status === 4 ? "delivered" :
-                contractOrder.status === 5 ? "cancelled" : "disputed",
+        status: contractStatusToAppStatus(contractOrder.status || 0) as OrderStatus,
         createdAt: Number(contractOrder.createdAt) || Math.floor(Date.now() / 1000),
         updatedAt: Number(contractOrder.updatedAt) || Math.floor(Date.now() / 1000),
         network: getNetworkName(chainId),
