@@ -402,10 +402,10 @@ export default function OrderDetailPage() {
                 <div className="space-y-2">
                   <button
                     onClick={() => {
-                      const url = `https://${
-                        order.network === "mainnet" ? "" : order.network + "."
-                      }etherscan.io/tx/${order.transactionHash}`;
-                      window.open(url, "_blank");
+                      if (order.transactionHash) {
+                        const url = getBlockExplorerUrl(chainId, order.transactionHash);
+                        window.open(url, "_blank");
+                      }
                     }}
                     disabled={!order.transactionHash}
                     className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
