@@ -199,24 +199,40 @@ export function useCreateOrder() {
       throw new Error("Contract not deployed on this network");
     }
 
+    // Validate inputs
+    if (!orderData.productName || orderData.productName.trim() === "") {
+      throw new Error("Product name is required");
+    }
+    if (!orderData.price || parseFloat(orderData.price) <= 0) {
+      throw new Error("Price must be greater than 0");
+    }
+    if (orderData.quantity <= 0) {
+      throw new Error("Quantity must be greater than 0");
+    }
+
     const value = parseEther(orderData.price);
 
-    return writeContract({
-      address: contractAddress,
-      abi: OrderTrackingABI,
-      functionName: "createOrder",
-      args: [
-        orderData.seller,
-        orderData.productName,
-        orderData.productDescription,
-        BigInt(orderData.quantity),
-        "0x0000000000000000000000000000000000000000" as Address, // ETH
-        BigInt(orderData.estimatedDelivery || 0),
-        orderData.network,
-        orderData.metadataHash || "",
-      ],
-      value,
-    });
+    try {
+      return await writeContract({
+        address: contractAddress,
+        abi: OrderTrackingABI,
+        functionName: "createOrder",
+        args: [
+          orderData.seller,
+          orderData.productName,
+          orderData.productDescription || "",
+          BigInt(orderData.quantity),
+          "0x0000000000000000000000000000000000000000" as Address, // ETH
+          BigInt(orderData.estimatedDelivery || 0),
+          orderData.network,
+          orderData.metadataHash || "",
+        ],
+        value,
+      });
+    } catch (error: any) {
+      console.error("Create order error:", error);
+      throw new Error(error?.message || "Failed to create order");
+    }
   };
 
   // Invalidate orders query after successful creation
