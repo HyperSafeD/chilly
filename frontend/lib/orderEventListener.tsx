@@ -6,17 +6,20 @@ import { NotificationType, getNotificationMessage, OrderStatus } from './notific
 import { OrderTrackingABI } from './abis/OrderTracking'
 
 
-const CONTRACT_ADDRESSES: Record<number, `0x${string}`> = {
-  11155111: (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_SEPOLIA as `0x${string}`) || '0x',
-  137: (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_POLYGON as `0x${string}`) || '0x',
-  42161: (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_ARBITRUM as `0x${string}`) || '0x',
+import { getContractAddress } from './contract'
+
+// Use centralized contract address configuration
+function getContractAddressForEvent(chainId: number | undefined): `0x${string}` | undefined {
+  if (!chainId) return undefined
+  const address = getContractAddress(chainId)
+  return address ? (address as `0x${string}`) : undefined
 }
 
 export function useOrderEventListener() {
   const { address, chainId } = useAccount()
   const { addNotification } = useNotifications()
 
-  const contractAddress = chainId ? CONTRACT_ADDRESSES[chainId] : undefined
+  const contractAddress = getContractAddressForEvent(chainId)
 
   // Listen to OrderCreated events
   useWatchContractEvent({
