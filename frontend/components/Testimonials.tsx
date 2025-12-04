@@ -28,7 +28,7 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="py-20 sm:py-32 bg-zinc-50 dark:bg-zinc-900">
+    <section id="testimonials" className="py-20 sm:py-32 bg-zinc-50 dark:bg-zinc-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">
