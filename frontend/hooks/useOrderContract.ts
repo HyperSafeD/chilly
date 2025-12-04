@@ -253,12 +253,17 @@ export function useUpdateOrderStatus() {
 
     const contractStatus = appStatusToContractStatus(newStatus);
 
-    return writeContract({
-      address: contractAddress,
-      abi: OrderTrackingABI,
-      functionName: "updateOrderStatus",
-      args: [BigInt(orderId), contractStatus],
-    });
+    try {
+      return await writeContract({
+        address: contractAddress,
+        abi: OrderTrackingABI,
+        functionName: "updateOrderStatus",
+        args: [BigInt(orderId), contractStatus],
+      });
+    } catch (error: any) {
+      console.error("Update status error:", error);
+      throw new Error(error?.message || "Failed to update order status");
+    }
   };
 
   // Invalidate orders query after successful update
