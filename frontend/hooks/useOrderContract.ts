@@ -18,6 +18,7 @@ import {
 } from "@/lib/contract";
 import { Order } from "@/lib/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { parseContractError } from "@/lib/contractErrors";
 
 /**
  * Hook to get contract address for current chain
@@ -236,7 +237,8 @@ export function useCreateOrder() {
       });
     } catch (error: any) {
       console.error("Create order error:", error);
-      throw new Error(error?.message || "Failed to create order");
+      const errorMessage = parseContractError(error);
+      throw new Error(errorMessage);
     }
   };
 
@@ -285,7 +287,8 @@ export function useUpdateOrderStatus() {
       });
     } catch (error: any) {
       console.error("Update status error:", error);
-      throw new Error(error?.message || "Failed to update order status");
+      const errorMessage = parseContractError(error);
+      throw new Error(errorMessage);
     }
   };
 
