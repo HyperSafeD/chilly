@@ -17,7 +17,7 @@ import {
   useContractAddress,
 } from "@/hooks/useOrderContract";
 import { getContractAddress } from "@/lib/contract";
-import { isContractDeployed } from "@/lib/contractUtils";
+import { isContractDeployed, getNetworkName } from "@/lib/contractUtils";
 
 export default function DashboardPage() {
   const { isConnected, address } = useAccount();
