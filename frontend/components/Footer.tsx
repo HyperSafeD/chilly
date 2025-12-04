@@ -59,6 +59,11 @@ export function Footer() {
                 </a>
               </li>
               <li>
+                <a href="#testimonials" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors">
+                  Testimonials
+                </a>
+              </li>
+              <li>
                 <a href="#" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors">
                   Pricing
                 </a>

@@ -2,7 +2,6 @@
 
 import React from "react";
 import { NotificationBell } from "./notifications/NotificationBell";
-import { ThemeToggle } from "./ThemeToggle";
 import { useAccount } from "wagmi";
 
 export function Header() {
@@ -50,10 +49,15 @@ export function Header() {
             >
               How It Works
             </a>
+            <a
+              href="#testimonials"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50 transition-colors"
+            >
+              Testimonials
+            </a>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
+          <div className="flex items-center gap-4">
             {isConnected && <NotificationBell />}
             <appkit-button />
           </div>

@@ -177,9 +177,6 @@ contract OrderTracking {
         emit OrderUpdated(_orderId, _newStatus, msg.sender, block.timestamp);
     }
 
-    /**
-     * @dev Add tracking number to order
-     */
     function addTrackingNumber(
         uint256 _orderId,
         string memory _trackingNumber
@@ -236,9 +233,6 @@ contract OrderTracking {
         emit OrderCancelled(_orderId, msg.sender, block.timestamp);
     }
 
-    /**
-     * @dev Get order details
-     */
     function getOrder(
         uint256 _orderId
     ) external view orderExists(_orderId) returns (Order memory) {

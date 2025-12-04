@@ -5,7 +5,7 @@ import { useNotifications } from './NotificationContext'
 import { NotificationType, getNotificationMessage, OrderStatus } from './notificationTypes'
 import { OrderTrackingABI } from './abis/OrderTracking'
 
-// Contract addresses for different networks
+
 const CONTRACT_ADDRESSES: Record<number, `0x${string}`> = {
   11155111: (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_SEPOLIA as `0x${string}`) || '0x',
   137: (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_POLYGON as `0x${string}`) || '0x',

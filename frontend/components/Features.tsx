@@ -26,7 +26,7 @@ const features = [
   {
     icon: '🌐',
     title: 'Multi-chain Support',
-    description: 'Works across multiple blockchain networks including Ethereum, Polygon, Arbitrum, and more.',
+    description: 'Works across multiple blockchain networks including Ethereum, Polygon, Arbitrum, Base, and Celo.',
   },
   {
     icon: '📊',
@@ -43,7 +43,7 @@ export function Features() {
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">
             Powerful Features for Your Business
           </h2>
-          <p className="text-lg text-zinc-600 dark:text-zinc-400">
+          <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
             Everything you need to manage and track orders on the blockchain with complete transparency and security.
           </p>
         </div>
@@ -52,13 +52,13 @@ export function Features() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative p-8 rounded-2xl bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300 border border-zinc-200 dark:border-zinc-800 hover:border-orange-300 dark:hover:border-orange-700 hover:shadow-lg"
+              className="group relative p-8 rounded-2xl bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300 border border-zinc-200 dark:border-zinc-800 hover:border-orange-300 dark:hover:border-orange-700 hover:shadow-lg hover:-translate-y-1"
             >
-              <div className="text-4xl mb-4">{feature.icon}</div>
+              <div className="text-4xl mb-4 transition-transform group-hover:scale-110 group-hover:rotate-6">{feature.icon}</div>
               <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
                 {feature.title}
               </h3>
-              <p className="text-zinc-600 dark:text-zinc-400">
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
                 {feature.description}
               </p>
             </div>
