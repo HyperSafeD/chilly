@@ -26,7 +26,7 @@ const features = [
   {
     icon: '🌐',
     title: 'Multi-chain Support',
-    description: 'Works across multiple blockchain networks including Ethereum, Polygon, Arbitrum, and more.',
+    description: 'Works across multiple blockchain networks including Ethereum, Polygon, Arbitrum, Base, and Celo.',
   },
   {
     icon: '📊',
