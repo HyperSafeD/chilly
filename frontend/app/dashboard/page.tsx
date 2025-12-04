@@ -19,7 +19,7 @@ import {
   useContractAddress,
 } from "@/hooks/useOrderContract";
 import { getContractAddress } from "@/lib/contract";
-import { isContractDeployed, getNetworkName, getAddressExplorerUrl } from "@/lib/contractUtils";
+import { isContractDeployed, getNetworkName } from "@/lib/contractUtils";
 import { parseContractError } from "@/lib/contractErrors";
 
 export default function DashboardPage() {
