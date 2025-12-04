@@ -31,7 +31,7 @@ export function Hero() {
           </h1>
 
           {/* Subheading */}
-          <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 mb-12 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed">
             Track and manage your orders on the blockchain with complete
             transparency, immutability, and trustless verification. No
             intermediaries, just pure decentralization.
