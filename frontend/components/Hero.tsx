@@ -22,7 +22,7 @@ export function Hero() {
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-6 leading-tight">
             Decentralized Order
             <br />
             <span className="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
