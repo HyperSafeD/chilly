@@ -68,8 +68,8 @@ export function Hero() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 mt-20 pt-12 border-t border-zinc-200 dark:border-zinc-800">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-20 pt-12 border-t border-zinc-200 dark:border-zinc-800">
+            <div className="text-center sm:text-left">
               <div className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-50 mb-2">
                 10K+
               </div>
@@ -77,7 +77,7 @@ export function Hero() {
                 Orders Tracked
               </div>
             </div>
-            <div>
+            <div className="text-center sm:text-left">
               <div className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-50 mb-2">
                 99.9%
               </div>
@@ -85,7 +85,7 @@ export function Hero() {
                 Uptime
               </div>
             </div>
-            <div>
+            <div className="text-center sm:text-left">
               <div className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-50 mb-2">
                 24/7
               </div>
