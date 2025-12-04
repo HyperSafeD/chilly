@@ -49,16 +49,18 @@ export default function DashboardPage() {
 
   // Use contract orders if available, otherwise use mock data
   useEffect(() => {
-    if (useContract && contractOrders && contractOrders.length > 0) {
-      setOrders(contractOrders);
+    if (useContract && contractAddress) {
+      // Use contract data
+      if (contractOrders) {
+        setOrders(contractOrders);
+      } else {
+        setOrders([]);
+      }
       setIsLoading(isLoadingContract);
-    } else if (!useContract || !contractAddress) {
+    } else {
       // Fallback to mock data if contract not deployed
       setOrders(mockOrders);
       setIsLoading(false);
-    } else {
-      setOrders([]);
-      setIsLoading(isLoadingContract);
     }
   }, [contractOrders, isLoadingContract, useContract, contractAddress]);
 
