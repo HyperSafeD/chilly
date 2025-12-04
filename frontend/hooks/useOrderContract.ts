@@ -158,7 +158,10 @@ export function useMyOrders() {
     orders: transformedOrders,
     isLoading,
     error,
-    refetch: () => {}, // Will be handled by react-query
+    refetch: () => {
+      // Refetch is handled automatically by react-query
+      // This is just for API compatibility
+    },
   };
 }
 
