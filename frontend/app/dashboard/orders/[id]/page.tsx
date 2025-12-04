@@ -87,12 +87,7 @@ export default function OrderDetailPage() {
                 contractOrder.status === 5 ? "cancelled" : "disputed",
         createdAt: Number(contractOrder.createdAt) || Math.floor(Date.now() / 1000),
         updatedAt: Number(contractOrder.updatedAt) || Math.floor(Date.now() / 1000),
-        network: chainId === 1 ? "mainnet" :
-                 chainId === 11155111 ? "sepolia" :
-                 chainId === 84532 ? "base-sepolia" :
-                 chainId === 137 ? "polygon" :
-                 chainId === 42161 ? "arbitrum" :
-                 chainId === 44787 ? "celo-alfajores" : "unknown",
+        network: getNetworkName(chainId),
         trackingNumber: contractOrder.trackingNumber && contractOrder.trackingNumber !== "" 
           ? contractOrder.trackingNumber 
           : undefined,
