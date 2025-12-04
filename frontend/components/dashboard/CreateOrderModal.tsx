@@ -47,9 +47,16 @@ export function CreateOrderModal({
     }
 
     // Validate seller address if provided
-    if (formData.seller && !isValidAddress(formData.seller)) {
-      setValidationError("Invalid seller address format");
-      return;
+    if (formData.seller && formData.seller.trim() !== "") {
+      if (!isValidAddress(formData.seller)) {
+        setValidationError("Invalid seller address format");
+        return;
+      }
+      // Check if seller is same as buyer
+      if (formData.seller.toLowerCase() === address.toLowerCase()) {
+        setValidationError("Seller address cannot be the same as your address");
+        return;
+      }
     }
 
     // Validate price
