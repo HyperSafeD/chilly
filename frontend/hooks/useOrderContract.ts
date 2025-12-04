@@ -112,14 +112,7 @@ export function useMyOrders() {
       .filter(validateContractOrder)
       .map((order: any) => {
       // Get network name from chainId
-      const networkName = 
-        chainId === 1 ? "mainnet" :
-        chainId === 11155111 ? "sepolia" :
-        chainId === 84532 ? "base-sepolia" :
-        chainId === 137 ? "polygon" :
-        chainId === 42161 ? "arbitrum" :
-        chainId === 44787 ? "celo-alfajores" :
-        "unknown";
+      const networkName = getNetworkName(chainId);
 
       return {
         id: order.id.toString(),
