@@ -11,6 +11,7 @@ import { OrderList } from "@/components/dashboard/OrderList";
 import { CreateOrderModal } from "@/components/dashboard/CreateOrderModal";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { exportOrdersToJSON, exportOrdersToCSV } from "@/lib/exportUtils";
+import { TransactionStatus } from "@/components/dashboard/TransactionStatus";
 import {
   useMyOrders,
   useCreateOrder,
@@ -120,6 +121,8 @@ export default function DashboardPage() {
     createOrder,
     isPending: isCreating,
     isSuccess: isCreated,
+    hash: createOrderHash,
+    error: createOrderError,
   } = useCreateOrder();
 
   const handleCreateOrder = async (orderData: {
@@ -329,6 +332,19 @@ export default function DashboardPage() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreateOrder={handleCreateOrder}
+      />
+
+      {/* Transaction Status */}
+      <TransactionStatus
+        hash={createOrderHash}
+        isPending={isCreating}
+        isSuccess={isCreated}
+        error={createOrderError}
+        onClose={() => {
+          if (isCreated) {
+            setIsCreateModalOpen(false);
+          }
+        }}
       />
     </div>
   );
