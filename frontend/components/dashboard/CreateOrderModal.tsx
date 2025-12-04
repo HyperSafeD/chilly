@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
+import { isValidAddress } from "@/lib/contractUtils";
 
 interface CreateOrderModalProps {
   isOpen: boolean;
@@ -33,9 +34,30 @@ export function CreateOrderModal({
 
   if (!isOpen) return null;
 
+  const chainId = useChainId();
+  const [validationError, setValidationError] = useState<string>("");
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!address) return;
+    setValidationError("");
+    
+    if (!address) {
+      setValidationError("Please connect your wallet");
+      return;
+    }
+
+    // Validate seller address if provided
+    if (formData.seller && !isValidAddress(formData.seller)) {
+      setValidationError("Invalid seller address format");
+      return;
+    }
+
+    // Validate price
+    const priceNum = parseFloat(formData.price);
+    if (isNaN(priceNum) || priceNum <= 0) {
+      setValidationError("Price must be a positive number");
+      return;
+    }
 
     onCreateOrder(formData);
     // Reset form
@@ -68,6 +90,11 @@ export function CreateOrderModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {validationError && (
+            <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-400">
+              {validationError}
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-zinc-900 dark:text-zinc-50 mb-2">
               Product Name *
