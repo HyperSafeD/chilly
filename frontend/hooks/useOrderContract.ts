@@ -9,6 +9,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { parseEther, formatEther, Address } from "viem";
+import { formatWeiToEth, validateContractOrder } from "@/lib/contractHelpers";
 import { OrderTrackingABI } from "@/lib/abis/OrderTracking";
 import {
   getContractAddress,
@@ -126,7 +127,7 @@ export function useMyOrders() {
         productName: order.productName || "Unknown Product",
         productDescription: order.productDescription || "",
         quantity: Number(order.quantity) || 1,
-        price: formatEther(order.price || BigInt(0)),
+        price: formatWeiToEth(order.price || BigInt(0)),
         currency:
           order.currency === "0x0000000000000000000000000000000000000000" ||
           !order.currency
