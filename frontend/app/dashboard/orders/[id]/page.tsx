@@ -10,8 +10,9 @@ import { Footer } from "@/components/Footer";
 import { OrderStatusUpdate } from "@/components/dashboard/OrderStatusUpdate";
 import { formatDistanceToNow, format } from "date-fns";
 import { OrderStatus } from "@/lib/types";
-import { useOrder } from "@/hooks/useOrderContract";
+import { useOrder, useUpdateOrderStatus } from "@/hooks/useOrderContract";
 import { getContractAddress } from "@/lib/contract";
+import { TransactionStatus } from "@/components/dashboard/TransactionStatus";
 
 export default function OrderDetailPage() {
   const params = useParams();
@@ -28,16 +29,36 @@ export default function OrderDetailPage() {
     contractAddress && orderId ? orderId : null
   );
 
-  const handleStatusUpdate = (orderId: string, newStatus: OrderStatus) => {
+  const {
+    updateStatus,
+    isPending: isUpdatingStatus,
+    isSuccess: isStatusUpdated,
+    hash: statusUpdateHash,
+    error: statusUpdateError,
+  } = useUpdateOrderStatus();
+
+  const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
     if (order && order.id === orderId) {
-      setOrder({
-        ...order,
-        status: newStatus,
-        updatedAt: Math.floor(Date.now() / 1000),
-      });
-      alert("Order status updated successfully!");
+      try {
+        const orderIdNum = parseInt(orderId);
+        if (isNaN(orderIdNum)) {
+          throw new Error("Invalid order ID");
+        }
+        await updateStatus(orderIdNum, newStatus);
+      } catch (error: any) {
+        console.error("Failed to update status:", error);
+        alert(`Failed to update status: ${error?.message || "Unknown error"}`);
+      }
     }
   };
+
+  // Update local state when status update succeeds
+  React.useEffect(() => {
+    if (isStatusUpdated && order) {
+      // Status will be updated via contract refetch
+      // Just show success message
+    }
+  }, [isStatusUpdated, order]);
 
   useEffect(() => {
     if (!isConnected) {
@@ -435,6 +456,14 @@ export default function OrderDetailPage() {
         </div>
       </main>
       <Footer />
+      
+      {/* Transaction Status */}
+      <TransactionStatus
+        hash={statusUpdateHash}
+        isPending={isUpdatingStatus}
+        isSuccess={isStatusUpdated}
+        error={statusUpdateError}
+      />
     </div>
   );
 }
