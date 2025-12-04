@@ -55,24 +55,26 @@ export function useMyOrders() {
   const chainId = useChainId();
 
   // Get buyer orders
-  const { data: buyerOrderIds } = useReadContract({
+  const { data: buyerOrderIds, isLoading: isLoadingBuyer } = useReadContract({
     address: contractAddress || undefined,
     abi: OrderTrackingABI,
     functionName: "getBuyerOrders",
     args: address ? [address] : undefined,
     query: {
       enabled: !!contractAddress && !!address,
+      retry: 2,
     },
   });
 
   // Get seller orders
-  const { data: sellerOrderIds } = useReadContract({
+  const { data: sellerOrderIds, isLoading: isLoadingSeller } = useReadContract({
     address: contractAddress || undefined,
     abi: OrderTrackingABI,
     functionName: "getSellerOrders",
     args: address ? [address] : undefined,
     query: {
       enabled: !!contractAddress && !!address,
+      retry: 2,
     },
   });
 
@@ -85,7 +87,7 @@ export function useMyOrders() {
   // Fetch all orders
   const {
     data: orders,
-    isLoading,
+    isLoading: isLoadingOrders,
     error,
   } = useReadContract({
     address: contractAddress || undefined,
@@ -94,8 +96,11 @@ export function useMyOrders() {
     args: allOrderIds.length > 0 ? [allOrderIds] : undefined,
     query: {
       enabled: !!contractAddress && allOrderIds.length > 0,
+      retry: 2,
     },
   });
+
+  const isLoading = isLoadingBuyer || isLoadingSeller || isLoadingOrders;
 
   // Transform contract orders to app orders
   const transformedOrders: Order[] = React.useMemo(() => {
