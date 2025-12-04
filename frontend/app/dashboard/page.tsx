@@ -19,6 +19,7 @@ import {
 } from "@/hooks/useOrderContract";
 import { getContractAddress } from "@/lib/contract";
 import { isContractDeployed, getNetworkName } from "@/lib/contractUtils";
+import { parseContractError } from "@/lib/contractErrors";
 
 export default function DashboardPage() {
   const { isConnected, address } = useAccount();
@@ -162,7 +163,8 @@ export default function DashboardPage() {
         });
       } catch (error: any) {
         console.error("Failed to create order:", error);
-        alert(`Failed to create order: ${error?.message || "Unknown error"}`);
+        const errorMessage = parseContractError(error);
+        alert(`Failed to create order: ${errorMessage}`);
       }
     } else {
       // Fallback to mock data
