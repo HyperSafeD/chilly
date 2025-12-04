@@ -203,6 +203,11 @@ export default function DashboardPage() {
     if (isCreated) {
       setIsCreateModalOpen(false);
       // Orders will be refetched automatically via react-query
+      // Small delay to ensure transaction is processed
+      setTimeout(() => {
+        // Force refetch orders
+        window.location.reload();
+      }, 2000);
     }
   }, [isCreated]);
 
