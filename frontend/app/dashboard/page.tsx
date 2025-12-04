@@ -272,22 +272,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Contract Status */}
-            {useContract && contractAddress ? (
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-sm">
-                <span>✓</span>
-                <span>Connected to smart contract</span>
-                <code className="text-xs ml-2">
-                  {contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}
-                </code>
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-sm">
-                <span>⚠</span>
-                <span>
-                  Using mock data - Contract not deployed on this network
-                </span>
-              </div>
-            )}
+            <ContractStatus />
           </div>
 
           {/* Stats */}
