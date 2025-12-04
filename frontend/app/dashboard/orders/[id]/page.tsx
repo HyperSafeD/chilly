@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { Order } from "@/lib/types";
 import { mockOrders } from "@/lib/mockData";
 import { Header } from "@/components/Header";
@@ -10,13 +10,23 @@ import { Footer } from "@/components/Footer";
 import { OrderStatusUpdate } from "@/components/dashboard/OrderStatusUpdate";
 import { formatDistanceToNow, format } from "date-fns";
 import { OrderStatus } from "@/lib/types";
+import { useOrder } from "@/hooks/useOrderContract";
+import { getContractAddress } from "@/lib/contract";
 
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { isConnected, address } = useAccount();
+  const chainId = useChainId();
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Try to fetch from contract
+  const contractAddress = getContractAddress(chainId);
+  const orderId = params.id ? (typeof params.id === 'string' ? parseInt(params.id) : Number(params.id)) : null;
+  const { data: contractOrder, isLoading: isLoadingContract } = useOrder(
+    contractAddress && orderId ? orderId : null
+  );
 
   const handleStatusUpdate = (orderId: string, newStatus: OrderStatus) => {
     if (order && order.id === orderId) {
@@ -35,11 +45,46 @@ export default function OrderDetailPage() {
       return;
     }
 
-    // In a real app, fetch from blockchain or API
-    const foundOrder = mockOrders.find((o) => o.id === params.id);
-    setOrder(foundOrder || null);
-    setIsLoading(false);
-  }, [params.id, isConnected, router]);
+    // Try contract first, then fallback to mock
+    if (contractOrder && contractAddress) {
+      // Transform contract order to app order format
+      const transformedOrder: Order = {
+        id: contractOrder.id.toString(),
+        orderNumber: contractOrder.orderNumber || `ORD-${contractOrder.id.toString().padStart(6, "0")}`,
+        buyer: contractOrder.buyer,
+        seller: contractOrder.seller,
+        productName: contractOrder.productName || "Unknown Product",
+        productDescription: contractOrder.productDescription || "",
+        quantity: Number(contractOrder.quantity) || 1,
+        price: contractOrder.price ? (Number(contractOrder.price) / 1e18).toFixed(4) : "0",
+        currency: "ETH",
+        status: contractOrder.status === 0 ? "pending" :
+                contractOrder.status === 1 ? "confirmed" :
+                contractOrder.status === 2 ? "processing" :
+                contractOrder.status === 3 ? "shipped" :
+                contractOrder.status === 4 ? "delivered" :
+                contractOrder.status === 5 ? "cancelled" : "disputed",
+        createdAt: Number(contractOrder.createdAt) || Math.floor(Date.now() / 1000),
+        updatedAt: Number(contractOrder.updatedAt) || Math.floor(Date.now() / 1000),
+        network: chainId === 1 ? "mainnet" :
+                 chainId === 11155111 ? "sepolia" :
+                 chainId === 84532 ? "base-sepolia" :
+                 chainId === 137 ? "polygon" :
+                 chainId === 42161 ? "arbitrum" :
+                 chainId === 44787 ? "celo-alfajores" : "unknown",
+        trackingNumber: contractOrder.trackingNumber && contractOrder.trackingNumber !== "" 
+          ? contractOrder.trackingNumber 
+          : undefined,
+      };
+      setOrder(transformedOrder);
+      setIsLoading(false);
+    } else if (!contractAddress || !isLoadingContract) {
+      // Fallback to mock data
+      const foundOrder = mockOrders.find((o) => o.id === params.id);
+      setOrder(foundOrder || null);
+      setIsLoading(false);
+    }
+  }, [params.id, isConnected, router, contractOrder, contractAddress, isLoadingContract, chainId]);
 
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 10)}...${addr.slice(-8)}`;
