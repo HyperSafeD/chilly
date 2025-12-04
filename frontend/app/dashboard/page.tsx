@@ -12,6 +12,7 @@ import { CreateOrderModal } from "@/components/dashboard/CreateOrderModal";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { exportOrdersToJSON, exportOrdersToCSV } from "@/lib/exportUtils";
 import { TransactionStatus } from "@/components/dashboard/TransactionStatus";
+import { ContractStatus } from "@/components/dashboard/ContractStatus";
 import {
   useMyOrders,
   useCreateOrder,
