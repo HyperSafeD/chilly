@@ -56,7 +56,7 @@ export function Testimonials() {
                   </div>
                 </div>
               </div>
-              <p className="text-zinc-700 dark:text-zinc-300 italic">
+              <p className="text-zinc-700 dark:text-zinc-300 italic leading-relaxed">
                 "{testimonial.content}"
               </p>
             </div>
