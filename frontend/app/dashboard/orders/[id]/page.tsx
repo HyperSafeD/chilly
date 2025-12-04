@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { Order } from "@/lib/types";
 import { mockOrders } from "@/lib/mockData";
 import { Header } from "@/components/Header";
@@ -10,24 +10,55 @@ import { Footer } from "@/components/Footer";
 import { OrderStatusUpdate } from "@/components/dashboard/OrderStatusUpdate";
 import { formatDistanceToNow, format } from "date-fns";
 import { OrderStatus } from "@/lib/types";
+import { useOrder, useUpdateOrderStatus } from "@/hooks/useOrderContract";
+import { getContractAddress } from "@/lib/contract";
+import { TransactionStatus } from "@/components/dashboard/TransactionStatus";
 
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { isConnected, address } = useAccount();
+  const chainId = useChainId();
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Try to fetch from contract
+  const contractAddress = getContractAddress(chainId);
+  const orderId = params.id ? (typeof params.id === 'string' ? parseInt(params.id) : Number(params.id)) : null;
+  const { data: contractOrder, isLoading: isLoadingContract } = useOrder(
+    contractAddress && orderId ? orderId : null
+  );
 
-  const handleStatusUpdate = (orderId: string, newStatus: OrderStatus) => {
+  const {
+    updateStatus,
+    isPending: isUpdatingStatus,
+    isSuccess: isStatusUpdated,
+    hash: statusUpdateHash,
+    error: statusUpdateError,
+  } = useUpdateOrderStatus();
+
+  const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
     if (order && order.id === orderId) {
-      setOrder({
-        ...order,
-        status: newStatus,
-        updatedAt: Math.floor(Date.now() / 1000),
-      });
-      alert("Order status updated successfully!");
+      try {
+        const orderIdNum = parseInt(orderId);
+        if (isNaN(orderIdNum)) {
+          throw new Error("Invalid order ID");
+        }
+        await updateStatus(orderIdNum, newStatus);
+      } catch (error: any) {
+        console.error("Failed to update status:", error);
+        alert(`Failed to update status: ${error?.message || "Unknown error"}`);
+      }
     }
   };
+
+  // Update local state when status update succeeds
+  React.useEffect(() => {
+    if (isStatusUpdated && order) {
+      // Status will be updated via contract refetch
+      // Just show success message
+    }
+  }, [isStatusUpdated, order]);
 
   useEffect(() => {
     if (!isConnected) {
@@ -35,11 +66,36 @@ export default function OrderDetailPage() {
       return;
     }
 
-    // In a real app, fetch from blockchain or API
-    const foundOrder = mockOrders.find((o) => o.id === params.id);
-    setOrder(foundOrder || null);
-    setIsLoading(false);
-  }, [params.id, isConnected, router]);
+    // Try contract first, then fallback to mock
+    if (contractOrder && contractAddress) {
+      // Transform contract order to app order format
+      const transformedOrder: Order = {
+        id: contractOrder.id.toString(),
+        orderNumber: contractOrder.orderNumber || `ORD-${contractOrder.id.toString().padStart(6, "0")}`,
+        buyer: contractOrder.buyer,
+        seller: contractOrder.seller,
+        productName: contractOrder.productName || "Unknown Product",
+        productDescription: contractOrder.productDescription || "",
+        quantity: Number(contractOrder.quantity) || 1,
+        price: contractOrder.price ? (Number(contractOrder.price) / 1e18).toFixed(4) : "0",
+        currency: "ETH",
+        status: contractStatusToAppStatus(contractOrder.status || 0) as OrderStatus,
+        createdAt: Number(contractOrder.createdAt) || Math.floor(Date.now() / 1000),
+        updatedAt: Number(contractOrder.updatedAt) || Math.floor(Date.now() / 1000),
+        network: getNetworkName(chainId),
+        trackingNumber: contractOrder.trackingNumber && contractOrder.trackingNumber !== "" 
+          ? contractOrder.trackingNumber 
+          : undefined,
+      };
+      setOrder(transformedOrder);
+      setIsLoading(false);
+    } else if (!contractAddress || !isLoadingContract) {
+      // Fallback to mock data
+      const foundOrder = mockOrders.find((o) => o.id === params.id);
+      setOrder(foundOrder || null);
+      setIsLoading(false);
+    }
+  }, [params.id, isConnected, router, contractOrder, contractAddress, isLoadingContract, chainId]);
 
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 10)}...${addr.slice(-8)}`;
@@ -357,10 +413,10 @@ export default function OrderDetailPage() {
                 <div className="space-y-2">
                   <button
                     onClick={() => {
-                      const url = `https://${
-                        order.network === "mainnet" ? "" : order.network + "."
-                      }etherscan.io/tx/${order.transactionHash}`;
-                      window.open(url, "_blank");
+                      if (order.transactionHash) {
+                        const url = getBlockExplorerUrl(chainId, order.transactionHash);
+                        window.open(url, "_blank");
+                      }
                     }}
                     disabled={!order.transactionHash}
                     className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-50 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -390,6 +446,14 @@ export default function OrderDetailPage() {
         </div>
       </main>
       <Footer />
+      
+      {/* Transaction Status */}
+      <TransactionStatus
+        hash={statusUpdateHash}
+        isPending={isUpdatingStatus}
+        isSuccess={isStatusUpdated}
+        error={statusUpdateError}
+      />
     </div>
   );
 }

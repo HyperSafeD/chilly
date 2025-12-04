@@ -11,12 +11,16 @@ import { OrderList } from "@/components/dashboard/OrderList";
 import { CreateOrderModal } from "@/components/dashboard/CreateOrderModal";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { exportOrdersToJSON, exportOrdersToCSV } from "@/lib/exportUtils";
+import { TransactionStatus } from "@/components/dashboard/TransactionStatus";
+import { ContractStatus } from "@/components/dashboard/ContractStatus";
 import {
   useMyOrders,
   useCreateOrder,
   useContractAddress,
 } from "@/hooks/useOrderContract";
 import { getContractAddress } from "@/lib/contract";
+import { isContractDeployed, getNetworkName } from "@/lib/contractUtils";
+import { parseContractError } from "@/lib/contractErrors";
 
 export default function DashboardPage() {
   const { isConnected, address } = useAccount();
@@ -41,24 +45,23 @@ export default function DashboardPage() {
 
   // Check if contract is deployed on current network
   useEffect(() => {
-    const address = getContractAddress(chainId);
-    setUseContract(
-      !!address && address !== "0x0000000000000000000000000000000000000000"
-    );
+    setUseContract(isContractDeployed(chainId));
   }, [chainId]);
 
   // Use contract orders if available, otherwise use mock data
   useEffect(() => {
-    if (useContract && contractOrders && contractOrders.length > 0) {
-      setOrders(contractOrders);
+    if (useContract && contractAddress) {
+      // Use contract data
+      if (contractOrders) {
+        setOrders(contractOrders);
+      } else {
+        setOrders([]);
+      }
       setIsLoading(isLoadingContract);
-    } else if (!useContract || !contractAddress) {
+    } else {
       // Fallback to mock data if contract not deployed
       setOrders(mockOrders);
       setIsLoading(false);
-    } else {
-      setOrders([]);
-      setIsLoading(isLoadingContract);
     }
   }, [contractOrders, isLoadingContract, useContract, contractAddress]);
 
@@ -120,6 +123,8 @@ export default function DashboardPage() {
     createOrder,
     isPending: isCreating,
     isSuccess: isCreated,
+    hash: createOrderHash,
+    error: createOrderError,
   } = useCreateOrder();
 
   const handleCreateOrder = async (orderData: {
@@ -159,7 +164,8 @@ export default function DashboardPage() {
         });
       } catch (error: any) {
         console.error("Failed to create order:", error);
-        alert(`Failed to create order: ${error?.message || "Unknown error"}`);
+        const errorMessage = parseContractError(error);
+        alert(`Failed to create order: ${errorMessage}`);
       }
     } else {
       // Fallback to mock data
@@ -261,22 +267,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Contract Status */}
-            {useContract && contractAddress ? (
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-sm">
-                <span>✓</span>
-                <span>Connected to smart contract</span>
-                <code className="text-xs ml-2">
-                  {contractAddress.slice(0, 6)}...{contractAddress.slice(-4)}
-                </code>
-              </div>
-            ) : (
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-sm">
-                <span>⚠</span>
-                <span>
-                  Using mock data - Contract not deployed on this network
-                </span>
-              </div>
-            )}
+            <ContractStatus />
           </div>
 
           {/* Stats */}
@@ -329,6 +320,19 @@ export default function DashboardPage() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreateOrder={handleCreateOrder}
+      />
+
+      {/* Transaction Status */}
+      <TransactionStatus
+        hash={createOrderHash}
+        isPending={isCreating}
+        isSuccess={isCreated}
+        error={createOrderError}
+        onClose={() => {
+          if (isCreated) {
+            setIsCreateModalOpen(false);
+          }
+        }}
       />
     </div>
   );

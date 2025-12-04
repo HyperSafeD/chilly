@@ -2,6 +2,9 @@
 
 import React, { useState } from "react";
 import { Order, OrderStatus } from "@/lib/types";
+import { useUpdateOrderStatus } from "@/hooks/useOrderContract";
+import { useAccount } from "wagmi";
+import { parseContractError } from "@/lib/contractErrors";
 
 interface OrderStatusUpdateProps {
   order: Order;
@@ -34,26 +37,49 @@ export function OrderStatusUpdate({
   onStatusUpdate,
   disabled = false,
 }: OrderStatusUpdateProps) {
-  const [isUpdating, setIsUpdating] = useState(false);
+  const { isConnected } = useAccount();
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus>(
     order.status
   );
+  
+  const {
+    updateStatus,
+    isPending: isUpdating,
+    isSuccess,
+    error,
+  } = useUpdateOrderStatus();
 
   const handleUpdate = async () => {
-    if (selectedStatus === order.status) return;
+    if (selectedStatus === order.status || !isConnected) return;
 
-    setIsUpdating(true);
     try {
-      // In a real app, this would be a blockchain transaction
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-      onStatusUpdate(order.id, selectedStatus);
-    } catch (error) {
+      const orderId = parseInt(order.id);
+      if (isNaN(orderId)) {
+        throw new Error("Invalid order ID");
+      }
+      
+      await updateStatus(orderId, selectedStatus);
+      // Callback will be triggered by success state
+    } catch (error: any) {
       console.error("Failed to update status:", error);
-      alert("Failed to update order status. Please try again.");
-    } finally {
-      setIsUpdating(false);
+      const errorMessage = parseContractError(error);
+      alert(`Failed to update order status: ${errorMessage}`);
     }
   };
+
+  // Handle successful update
+  React.useEffect(() => {
+    if (isSuccess) {
+      onStatusUpdate(order.id, selectedStatus);
+      // Reset selection to new status
+      setSelectedStatus(selectedStatus);
+    }
+  }, [isSuccess, order.id, selectedStatus, onStatusUpdate]);
+
+  // Update selected status when order status changes externally
+  React.useEffect(() => {
+    setSelectedStatus(order.status);
+  }, [order.status]);
 
   return (
     <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
@@ -76,7 +102,7 @@ export function OrderStatusUpdate({
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value as OrderStatus)}
-            disabled={disabled || isUpdating}
+            disabled={disabled || isUpdating || !canUpdate}
             className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {statusOptions.map((status) => (
@@ -86,9 +112,14 @@ export function OrderStatusUpdate({
             ))}
           </select>
         </div>
+        {!canUpdate && (
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            Only the buyer or seller can update this order
+          </p>
+        )}
         <button
           onClick={handleUpdate}
-          disabled={disabled || isUpdating || selectedStatus === order.status}
+          disabled={disabled || isUpdating || selectedStatus === order.status || !canUpdate}
           className="w-full px-4 py-2 rounded-lg bg-orange-600 text-white font-medium hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isUpdating ? "Updating..." : "Update Status"}
