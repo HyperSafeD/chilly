@@ -69,8 +69,15 @@ export function OrderStatusUpdate({
   React.useEffect(() => {
     if (isSuccess) {
       onStatusUpdate(order.id, selectedStatus);
+      // Reset selection to new status
+      setSelectedStatus(selectedStatus);
     }
   }, [isSuccess, order.id, selectedStatus, onStatusUpdate]);
+
+  // Update selected status when order status changes externally
+  React.useEffect(() => {
+    setSelectedStatus(order.status);
+  }, [order.status]);
 
   return (
     <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
