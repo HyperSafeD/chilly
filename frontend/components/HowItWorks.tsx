@@ -48,7 +48,7 @@ export function HowItWorks() {
                 <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
                   {step.title}
                 </h3>
-                <p className="text-zinc-600 dark:text-zinc-400">
+                <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   {step.description}
                 </p>
               </div>
