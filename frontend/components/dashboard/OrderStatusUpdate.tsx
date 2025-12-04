@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { Order, OrderStatus } from "@/lib/types";
+import { useUpdateOrderStatus } from "@/hooks/useOrderContract";
+import { useAccount } from "wagmi";
 
 interface OrderStatusUpdateProps {
   order: Order;
@@ -34,26 +36,41 @@ export function OrderStatusUpdate({
   onStatusUpdate,
   disabled = false,
 }: OrderStatusUpdateProps) {
-  const [isUpdating, setIsUpdating] = useState(false);
+  const { isConnected } = useAccount();
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus>(
     order.status
   );
+  
+  const {
+    updateStatus,
+    isPending: isUpdating,
+    isSuccess,
+    error,
+  } = useUpdateOrderStatus();
 
   const handleUpdate = async () => {
-    if (selectedStatus === order.status) return;
+    if (selectedStatus === order.status || !isConnected) return;
 
-    setIsUpdating(true);
     try {
-      // In a real app, this would be a blockchain transaction
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-      onStatusUpdate(order.id, selectedStatus);
-    } catch (error) {
+      const orderId = parseInt(order.id);
+      if (isNaN(orderId)) {
+        throw new Error("Invalid order ID");
+      }
+      
+      await updateStatus(orderId, selectedStatus);
+      // Callback will be triggered by success state
+    } catch (error: any) {
       console.error("Failed to update status:", error);
-      alert("Failed to update order status. Please try again.");
-    } finally {
-      setIsUpdating(false);
+      alert(`Failed to update order status: ${error?.message || "Unknown error"}`);
     }
   };
+
+  // Handle successful update
+  React.useEffect(() => {
+    if (isSuccess) {
+      onStatusUpdate(order.id, selectedStatus);
+    }
+  }, [isSuccess, order.id, selectedStatus, onStatusUpdate]);
 
   return (
     <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
