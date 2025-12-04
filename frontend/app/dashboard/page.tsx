@@ -17,6 +17,7 @@ import {
   useContractAddress,
 } from "@/hooks/useOrderContract";
 import { getContractAddress } from "@/lib/contract";
+import { isContractDeployed } from "@/lib/contractUtils";
 
 export default function DashboardPage() {
   const { isConnected, address } = useAccount();
@@ -41,10 +42,7 @@ export default function DashboardPage() {
 
   // Check if contract is deployed on current network
   useEffect(() => {
-    const address = getContractAddress(chainId);
-    setUseContract(
-      !!address && address !== "0x0000000000000000000000000000000000000000"
-    );
+    setUseContract(isContractDeployed(chainId));
   }, [chainId]);
 
   // Use contract orders if available, otherwise use mock data
