@@ -326,9 +326,11 @@ export function useConfirmOrder() {
     });
   };
 
-  if (isConfirmed) {
-    queryClient.invalidateQueries({ queryKey: ["orders"] });
-  }
+  React.useEffect(() => {
+    if (isConfirmed) {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    }
+  }, [isConfirmed, queryClient]);
 
   return {
     confirmOrder,
@@ -365,9 +367,11 @@ export function useAddTrackingNumber() {
     });
   };
 
-  if (isConfirmed) {
-    queryClient.invalidateQueries({ queryKey: ["orders"] });
-  }
+  React.useEffect(() => {
+    if (isConfirmed) {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    }
+  }, [isConfirmed, queryClient]);
 
   return {
     addTracking,
@@ -404,9 +408,11 @@ export function useCancelOrder() {
     });
   };
 
-  if (isConfirmed) {
-    queryClient.invalidateQueries({ queryKey: ["orders"] });
-  }
+  React.useEffect(() => {
+    if (isConfirmed) {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    }
+  }, [isConfirmed, queryClient]);
 
   return {
     cancelOrder,
@@ -443,9 +449,11 @@ export function useDisputeOrder() {
     });
   };
 
-  if (isConfirmed) {
-    queryClient.invalidateQueries({ queryKey: ["orders"] });
-  }
+  React.useEffect(() => {
+    if (isConfirmed) {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    }
+  }, [isConfirmed, queryClient]);
 
   return {
     disputeOrder,
