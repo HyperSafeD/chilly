@@ -54,7 +54,7 @@ export function Features() {
               key={index}
               className="group relative p-8 rounded-2xl bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all duration-300 border border-zinc-200 dark:border-zinc-800 hover:border-orange-300 dark:hover:border-orange-700 hover:shadow-lg hover:-translate-y-1"
             >
-              <div className="text-4xl mb-4 transition-transform group-hover:scale-110">{feature.icon}</div>
+              <div className="text-4xl mb-4 transition-transform group-hover:scale-110 group-hover:rotate-6">{feature.icon}</div>
               <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
                 {feature.title}
               </h3>
