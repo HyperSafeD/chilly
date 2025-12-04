@@ -58,3 +58,18 @@ export function getBlockExplorerUrl(chainId: number, txHash: string): string {
   return baseUrls[chainId] ? `${baseUrls[chainId]}${txHash}` : `#`;
 }
 
+/**
+ * Get block explorer URL for address
+ */
+export function getAddressExplorerUrl(chainId: number, address: string): string {
+  const baseUrls: Record<number, string> = {
+    1: "https://etherscan.io/address/",
+    11155111: "https://sepolia.etherscan.io/address/",
+    84532: "https://sepolia.basescan.org/address/",
+    137: "https://polygonscan.com/address/",
+    42161: "https://arbiscan.io/address/",
+    44787: "https://alfajores.celoscan.io/address/",
+  };
+  return baseUrls[chainId] ? `${baseUrls[chainId]}${address}` : `#`;
+}
+
