@@ -236,9 +236,11 @@ export function useCreateOrder() {
   };
 
   // Invalidate orders query after successful creation
-  if (isConfirmed) {
-    queryClient.invalidateQueries({ queryKey: ["orders"] });
-  }
+  React.useEffect(() => {
+    if (isConfirmed) {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    }
+  }, [isConfirmed, queryClient]);
 
   return {
     createOrder,
@@ -283,9 +285,11 @@ export function useUpdateOrderStatus() {
   };
 
   // Invalidate orders query after successful update
-  if (isConfirmed) {
-    queryClient.invalidateQueries({ queryKey: ["orders"] });
-  }
+  React.useEffect(() => {
+    if (isConfirmed) {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    }
+  }, [isConfirmed, queryClient]);
 
   return {
     updateStatus,
