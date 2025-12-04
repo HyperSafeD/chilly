@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import {
   useAccount,
   useChainId,
@@ -97,38 +98,55 @@ export function useMyOrders() {
   });
 
   // Transform contract orders to app orders
-  const transformedOrders: Order[] = orders
-    ? orders.map((order: any) => ({
+  const transformedOrders: Order[] = React.useMemo(() => {
+    if (!orders || !Array.isArray(orders)) return [];
+    
+    return orders.map((order: any) => {
+      // Get network name from chainId
+      const networkName = 
+        chainId === 1 ? "mainnet" :
+        chainId === 11155111 ? "sepolia" :
+        chainId === 84532 ? "base-sepolia" :
+        chainId === 137 ? "polygon" :
+        chainId === 42161 ? "arbitrum" :
+        chainId === 44787 ? "celo-alfajores" :
+        "unknown";
+
+      return {
         id: order.id.toString(),
-        orderNumber: order.orderNumber,
+        orderNumber: order.orderNumber || `ORD-${order.id.toString().padStart(6, "0")}`,
         buyer: order.buyer,
         seller: order.seller,
-        productName: order.productName,
-        productDescription: order.productDescription,
-        quantity: Number(order.quantity),
-        price: formatEther(order.price),
+        productName: order.productName || "Unknown Product",
+        productDescription: order.productDescription || "",
+        quantity: Number(order.quantity) || 1,
+        price: formatEther(order.price || BigInt(0)),
         currency:
-          order.currency === "0x0000000000000000000000000000000000000000"
+          order.currency === "0x0000000000000000000000000000000000000000" ||
+          !order.currency
             ? "ETH"
             : "TOKEN",
-        status: contractStatusToAppStatus(order.status) as any,
-        createdAt: Number(order.createdAt),
-        updatedAt: Number(order.updatedAt),
+        status: contractStatusToAppStatus(order.status || 0) as any,
+        createdAt: Number(order.createdAt) || Math.floor(Date.now() / 1000),
+        updatedAt: Number(order.updatedAt) || Math.floor(Date.now() / 1000),
         estimatedDelivery:
-          order.estimatedDelivery > 0
+          order.estimatedDelivery && order.estimatedDelivery > 0
             ? Number(order.estimatedDelivery)
             : undefined,
-        trackingNumber: order.trackingNumber || undefined,
-        transactionHash:
+        trackingNumber: order.trackingNumber && order.trackingNumber !== "" 
+          ? order.trackingNumber 
+          : undefined,
+        transactionHash: order.transactionHash && 
           order.transactionHash !== "0x0000000000000000000000000000000000000000"
             ? order.transactionHash
             : undefined,
-        network: order.network || "mainnet",
-        metadata: order.metadataHash
+        network: networkName,
+        metadata: order.metadataHash && order.metadataHash !== ""
           ? { ipfsHash: order.metadataHash }
           : undefined,
-      }))
-    : [];
+      };
+    });
+  }, [orders, chainId]);
 
   return {
     orders: transformedOrders,
