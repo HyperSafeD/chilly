@@ -40,9 +40,9 @@ export function HowItWorks() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <div key={index} className="relative">
+            <div key={index} className="relative group">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-600 text-white font-bold text-xl mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-600 text-white font-bold text-xl mb-6 transition-transform group-hover:scale-110 group-hover:shadow-lg">
                   {step.number}
                 </div>
                 <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-3">
