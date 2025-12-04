@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Order, OrderStatus } from "@/lib/types";
 import { useUpdateOrderStatus } from "@/hooks/useOrderContract";
 import { useAccount } from "wagmi";
+import { parseContractError } from "@/lib/contractErrors";
 
 interface OrderStatusUpdateProps {
   order: Order;
@@ -61,7 +62,8 @@ export function OrderStatusUpdate({
       // Callback will be triggered by success state
     } catch (error: any) {
       console.error("Failed to update status:", error);
-      alert(`Failed to update order status: ${error?.message || "Unknown error"}`);
+      const errorMessage = parseContractError(error);
+      alert(`Failed to update order status: ${errorMessage}`);
     }
   };
 
