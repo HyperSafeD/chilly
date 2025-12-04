@@ -24,9 +24,12 @@ export function CTA() {
               href="https://github.com/HyperSafeD/chilly"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-zinc-900 font-medium hover:bg-zinc-100 transition-all hover:scale-105 shadow-lg"
+              className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-white text-zinc-900 font-medium hover:bg-zinc-100 transition-all hover:scale-105 shadow-lg group"
             >
-              View on GitHub
+              <span>View on GitHub</span>
+              <svg className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </a>
           </div>
         </div>
