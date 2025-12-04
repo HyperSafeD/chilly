@@ -9,10 +9,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950">
       <Header />
-      <Hero />
-      <Features />
-      <HowItWorks />
-      <CTA />
+      <main>
+        <Hero />
+        <Features />
+        <HowItWorks />
+        <CTA />
+      </main>
       <Footer />
     </div>
   );
