@@ -315,6 +315,41 @@ describe("OrderTracking", function () {
       expect(sellerOrders2[0]).to.equal(1);
       expect(sellerOrders2[1]).to.equal(2);
     });
+
+    it("Should set order timestamps correctly", async function () {
+      const blockBefore = await ethers.provider.getBlock("latest");
+      const timestampBefore = blockBefore!.timestamp;
+
+      const tx = await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Product",
+        "Description",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: MIN_ORDER_VALUE }
+      );
+      const receipt = await tx.wait();
+      const blockAfter = await ethers.provider.getBlock(receipt!.blockNumber);
+      const timestampAfter = blockAfter!.timestamp;
+
+      const order = await orderTracking.getOrder(1);
+
+      // Test that createdAt is set to block.timestamp
+      expect(order.createdAt).to.be.gte(timestampBefore);
+      expect(order.createdAt).to.be.lte(timestampAfter);
+
+      // Test that updatedAt is set to block.timestamp
+      expect(order.updatedAt).to.be.gte(timestampBefore);
+      expect(order.updatedAt).to.be.lte(timestampAfter);
+      expect(order.updatedAt).to.equal(order.createdAt);
+
+      // Test that transactionHash is generated correctly
+      expect(order.transactionHash).to.not.equal(ethers.ZeroHash);
+      expect(order.transactionHash.length).to.equal(66); // 0x + 64 hex chars
+    });
   });
 
   describe("Order Updates", function () {
