@@ -36,6 +36,30 @@ describe("OrderTracking", function () {
       // Test that totalOrders starts at 0
       expect(await testContract.totalOrders()).to.equal(0);
     });
+
+    it("Should handle edge cases in constructor", async function () {
+      const OrderTracking = await ethers.getContractFactory("OrderTracking");
+      
+      // Test with platform fee of 0 (0%)
+      const contractZeroFee = await OrderTracking.deploy(0, MIN_ORDER_VALUE);
+      await contractZeroFee.waitForDeployment();
+      expect(await contractZeroFee.platformFeeBps()).to.equal(0);
+      
+      // Test with platform fee of 1000 (10% - maximum)
+      const contractMaxFee = await OrderTracking.deploy(1000, MIN_ORDER_VALUE);
+      await contractMaxFee.waitForDeployment();
+      expect(await contractMaxFee.platformFeeBps()).to.equal(1000);
+      
+      // Test with minimum order value of 0
+      const contractZeroMin = await OrderTracking.deploy(PLATFORM_FEE_BPS, 0);
+      await contractZeroMin.waitForDeployment();
+      expect(await contractZeroMin.minOrderValue()).to.equal(0);
+      
+      // Test with minimum order value of 1 wei
+      const contractOneWei = await OrderTracking.deploy(PLATFORM_FEE_BPS, 1);
+      await contractOneWei.waitForDeployment();
+      expect(await contractOneWei.minOrderValue()).to.equal(1);
+    });
   });
 
   describe("Order Creation", function () {
