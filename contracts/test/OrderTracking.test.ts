@@ -482,6 +482,22 @@ describe("OrderTracking", function () {
       const tx = await orderTracking.connect(merchant).confirmOrder(1);
       await expect(tx).to.not.be.reverted;
     });
+
+    it("Should enforce status requirements", async function () {
+      // Test that order must be in Pending status
+      // First confirm the order
+      await orderTracking.connect(merchant).confirmOrder(1);
+      
+      // Test that confirmed order cannot be confirmed again
+      await expect(
+        orderTracking.connect(merchant).confirmOrder(1)
+      ).to.be.revertedWith("OrderTracking: Invalid order status");
+
+      // Test that order must exist
+      await expect(
+        orderTracking.connect(merchant).confirmOrder(999)
+      ).to.be.revertedWith("OrderTracking: Order does not exist");
+    });
   });
 
   describe("Order Updates", function () {
