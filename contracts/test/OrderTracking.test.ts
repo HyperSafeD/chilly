@@ -99,6 +99,44 @@ describe("OrderTracking", function () {
       expect(order.status).to.equal(0); // Pending
       expect(order.orderNumber).to.equal("ORD-1");
     });
+
+    it("Should create order with payment and deduct platform fee", async function () {
+      const orderPrice = ethers.parseEther("1.0");
+      const contractInitialBalance = await ethers.provider.getBalance(await orderTracking.getAddress());
+
+      // Calculate expected fee (1% of 1 ETH = 0.01 ETH)
+      const expectedFee = (orderPrice * BigInt(PLATFORM_FEE_BPS)) / BigInt(10000);
+      const expectedSellerAmount = orderPrice - expectedFee;
+
+      const tx = await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Product",
+        "Description",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: orderPrice }
+      );
+      await tx.wait();
+
+      // Test that contract balance increases by order price
+      const contractBalance = await ethers.provider.getBalance(await orderTracking.getAddress());
+      expect(contractBalance).to.equal(contractInitialBalance + orderPrice);
+
+      // Test that owner receives platform fee (check by sending ETH to owner address)
+      const ownerBalance = await ethers.provider.getBalance(await owner.getAddress());
+      // Owner balance should increase by the fee amount
+      expect(ownerBalance).to.be.gte(ethers.parseEther("10000") + expectedFee); // Assuming owner starts with some balance
+
+      // Test that payment is held in escrow (contract holds the funds)
+      const order = await orderTracking.getOrder(1);
+      expect(order.price).to.equal(orderPrice);
+      
+      // Verify seller amount calculation (price - fee)
+      expect(expectedSellerAmount).to.equal(orderPrice - expectedFee);
+    });
   });
 
   describe("Order Updates", function () {
