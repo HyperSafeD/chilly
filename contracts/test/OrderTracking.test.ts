@@ -137,6 +137,98 @@ describe("OrderTracking", function () {
       // Verify seller amount calculation (price - fee)
       expect(expectedSellerAmount).to.equal(orderPrice - expectedFee);
     });
+
+    it("Should validate order creation requirements", async function () {
+      // Test that order value must be >= minOrderValue
+      await expect(
+        orderTracking.connect(customer).createOrder(
+          await merchant.getAddress(),
+          "Product",
+          "Description",
+          1,
+          ethers.ZeroAddress,
+          0,
+          "sepolia",
+          "",
+          { value: MIN_ORDER_VALUE - BigInt(1) }
+        )
+      ).to.be.revertedWith("OrderTracking: Order value too low");
+
+      // Test that quantity must be > 0
+      await expect(
+        orderTracking.connect(customer).createOrder(
+          await merchant.getAddress(),
+          "Product",
+          "Description",
+          0,
+          ethers.ZeroAddress,
+          0,
+          "sepolia",
+          "",
+          { value: MIN_ORDER_VALUE }
+        )
+      ).to.be.revertedWith("OrderTracking: Quantity must be greater than 0");
+
+      // Test that product name cannot be empty
+      await expect(
+        orderTracking.connect(customer).createOrder(
+          await merchant.getAddress(),
+          "",
+          "Description",
+          1,
+          ethers.ZeroAddress,
+          0,
+          "sepolia",
+          "",
+          { value: MIN_ORDER_VALUE }
+        )
+      ).to.be.revertedWith("OrderTracking: Product name required");
+
+      // Test that network identifier cannot be empty
+      await expect(
+        orderTracking.connect(customer).createOrder(
+          await merchant.getAddress(),
+          "Product",
+          "Description",
+          1,
+          ethers.ZeroAddress,
+          0,
+          "",
+          "",
+          { value: MIN_ORDER_VALUE }
+        )
+      ).to.be.revertedWith("OrderTracking: Network identifier required");
+
+      // Test that seller cannot be zero address
+      await expect(
+        orderTracking.connect(customer).createOrder(
+          ethers.ZeroAddress,
+          "Product",
+          "Description",
+          1,
+          ethers.ZeroAddress,
+          0,
+          "sepolia",
+          "",
+          { value: MIN_ORDER_VALUE }
+        )
+      ).to.be.revertedWith("OrderTracking: Invalid seller address");
+
+      // Test that seller cannot be the same as buyer
+      await expect(
+        orderTracking.connect(customer).createOrder(
+          await customer.getAddress(),
+          "Product",
+          "Description",
+          1,
+          ethers.ZeroAddress,
+          0,
+          "sepolia",
+          "",
+          { value: MIN_ORDER_VALUE }
+        )
+      ).to.be.revertedWith("OrderTracking: Cannot sell to yourself");
+    });
   });
 
   describe("Order Updates", function () {
