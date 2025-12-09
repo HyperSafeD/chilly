@@ -1,6 +1,6 @@
 # Missing Tests for OrderTracking Smart Contract
 
-This document outlines all the tests that have not been written for the OrderTracking smart contract. The current test file (`OrderTracking.test.js`) appears to test an older version of the contract and is missing comprehensive coverage for the current implementation.
+This document outlines all the tests that have not been written for the OrderTracking smart contract. The current test file (`OrderTracking.test.ts`) is being updated to provide comprehensive coverage for the current implementation.
 
 ## Contract Overview
 
@@ -16,20 +16,20 @@ The current `OrderTracking.sol` contract includes:
 
 ---
 
-## 1. Constructor Tests
+## 1. Constructor Tests ✅ COMPLETED
 
-### Missing Tests:
-- [ ] **Should deploy with correct platform fee and minimum order value**
-  - Test that constructor sets `platformFeeBps` correctly
-  - Test that constructor sets `minOrderValue` correctly
-  - Test that constructor sets `owner` to deployer address
-  - Test that `totalOrders` starts at 0
+### Completed Tests:
+- [x] **Should deploy with correct platform fee and minimum order value**
+  - ✅ Test that constructor sets `platformFeeBps` correctly
+  - ✅ Test that constructor sets `minOrderValue` correctly
+  - ✅ Test that constructor sets `owner` to deployer address
+  - ✅ Test that `totalOrders` starts at 0
 
-- [ ] **Should handle edge cases in constructor**
-  - Test with platform fee of 0 (0%)
-  - Test with platform fee of 1000 (10% - maximum)
-  - Test with minimum order value of 0
-  - Test with minimum order value of 1 wei
+- [x] **Should handle edge cases in constructor**
+  - ✅ Test with platform fee of 0 (0%)
+  - ✅ Test with platform fee of 1000 (10% - maximum)
+  - ✅ Test with minimum order value of 0
+  - ✅ Test with minimum order value of 1 wei
 
 ---
 
