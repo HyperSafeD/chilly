@@ -4,12 +4,14 @@ const { ethers } = require("hardhat");
 describe("OrderTracking", function () {
   let orderTracking;
   let owner, customer, merchant, other;
+  const PLATFORM_FEE_BPS = 100; // 1%
+  const MIN_ORDER_VALUE = ethers.parseEther("0.01"); // 0.01 ETH
 
   beforeEach(async function () {
     [owner, customer, merchant, other] = await ethers.getSigners();
     
     const OrderTracking = await ethers.getContractFactory("OrderTracking");
-    orderTracking = await OrderTracking.deploy();
+    orderTracking = await OrderTracking.deploy(PLATFORM_FEE_BPS, MIN_ORDER_VALUE);
     await orderTracking.waitForDeployment();
   });
 
