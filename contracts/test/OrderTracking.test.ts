@@ -259,6 +259,62 @@ describe("OrderTracking", function () {
           ethers.ZeroAddress // currency
         );
     });
+
+    it("Should track orders correctly", async function () {
+      // Create first order
+      await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Product 1",
+        "Description 1",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: MIN_ORDER_VALUE }
+      );
+
+      // Test that order is added to buyerOrders mapping
+      const buyerOrders1 = await orderTracking.getBuyerOrders(await customer.getAddress());
+      expect(buyerOrders1.length).to.equal(1);
+      expect(buyerOrders1[0]).to.equal(1);
+
+      // Test that order is added to sellerOrders mapping
+      const sellerOrders1 = await orderTracking.getSellerOrders(await merchant.getAddress());
+      expect(sellerOrders1.length).to.equal(1);
+      expect(sellerOrders1[0]).to.equal(1);
+
+      // Test that totalOrders increments correctly
+      expect(await orderTracking.totalOrders()).to.equal(1);
+
+      // Create second order
+      await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Product 2",
+        "Description 2",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: MIN_ORDER_VALUE }
+      );
+
+      // Test that order ID is assigned sequentially
+      const buyerOrders2 = await orderTracking.getBuyerOrders(await customer.getAddress());
+      expect(buyerOrders2.length).to.equal(2);
+      expect(buyerOrders2[0]).to.equal(1);
+      expect(buyerOrders2[1]).to.equal(2);
+
+      // Test that totalOrders increments
+      expect(await orderTracking.totalOrders()).to.equal(2);
+
+      // Test that seller has both orders
+      const sellerOrders2 = await orderTracking.getSellerOrders(await merchant.getAddress());
+      expect(sellerOrders2.length).to.equal(2);
+      expect(sellerOrders2[0]).to.equal(1);
+      expect(sellerOrders2[1]).to.equal(2);
+    });
   });
 
   describe("Order Updates", function () {
