@@ -229,6 +229,36 @@ describe("OrderTracking", function () {
         )
       ).to.be.revertedWith("OrderTracking: Cannot sell to yourself");
     });
+
+    it("Should emit OrderCreated event with correct parameters", async function () {
+      const orderPrice = ethers.parseEther("1.0");
+      const productName = "Test Product";
+      const network = "sepolia";
+
+      const tx = await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        productName,
+        "Description",
+        1,
+        ethers.ZeroAddress,
+        0,
+        network,
+        "",
+        { value: orderPrice }
+      );
+
+      // Test event emission with all order details
+      await expect(tx)
+        .to.emit(orderTracking, "OrderCreated")
+        .withArgs(
+          1, // orderId
+          await customer.getAddress(), // buyer (indexed)
+          await merchant.getAddress(), // seller (indexed)
+          "ORD-1", // orderNumber
+          orderPrice, // price
+          ethers.ZeroAddress // currency
+        );
+    });
   });
 
   describe("Order Updates", function () {
