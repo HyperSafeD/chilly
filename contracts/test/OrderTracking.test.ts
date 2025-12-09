@@ -498,6 +498,20 @@ describe("OrderTracking", function () {
         orderTracking.connect(merchant).confirmOrder(999)
       ).to.be.revertedWith("OrderTracking: Order does not exist");
     });
+
+    it("Should emit correct events", async function () {
+      // Test OrderStatusUpdated event with oldStatus = Pending, newStatus = Confirmed
+      const tx = await orderTracking.connect(merchant).confirmOrder(1);
+      
+      await expect(tx)
+        .to.emit(orderTracking, "OrderStatusUpdated")
+        .withArgs(
+          1, // orderId
+          0, // oldStatus (Pending)
+          1, // newStatus (Confirmed)
+          await merchant.getAddress() // updatedBy
+        );
+    });
   });
 
   describe("Order Updates", function () {
