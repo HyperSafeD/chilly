@@ -466,6 +466,22 @@ describe("OrderTracking", function () {
       // Test that updatedAt timestamp is updated
       expect(orderAfter.updatedAt).to.be.gte(updatedAtBefore);
     });
+
+    it("Should enforce authorization", async function () {
+      // Test that buyer cannot confirm order
+      await expect(
+        orderTracking.connect(customer).confirmOrder(1)
+      ).to.be.revertedWith("OrderTracking: Only seller can confirm");
+
+      // Test that non-participant cannot confirm order
+      await expect(
+        orderTracking.connect(other).confirmOrder(1)
+      ).to.be.revertedWith("OrderTracking: Only seller can confirm");
+
+      // Test that only seller can confirm
+      const tx = await orderTracking.connect(merchant).confirmOrder(1);
+      await expect(tx).to.not.be.reverted;
+    });
   });
 
   describe("Order Updates", function () {
