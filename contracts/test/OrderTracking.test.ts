@@ -1,9 +1,10 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+import { expect } from "chai";
+import { ethers } from "hardhat";
+import { Contract, Signer } from "ethers";
 
 describe("OrderTracking", function () {
-  let orderTracking;
-  let owner, customer, merchant, other;
+  let orderTracking: Contract;
+  let owner: Signer, customer: Signer, merchant: Signer, other: Signer;
   const PLATFORM_FEE_BPS = 100; // 1%
   const MIN_ORDER_VALUE = ethers.parseEther("0.01"); // 0.01 ETH
 
@@ -31,7 +32,7 @@ describe("OrderTracking", function () {
       expect(await testContract.minOrderValue()).to.equal(testMinOrderValue);
       
       // Test that constructor sets owner to deployer address
-      expect(await testContract.owner()).to.equal(owner.address);
+      expect(await testContract.owner()).to.equal(await owner.getAddress());
       
       // Test that totalOrders starts at 0
       expect(await testContract.totalOrders()).to.equal(0);
@@ -65,7 +66,7 @@ describe("OrderTracking", function () {
   describe("Order Creation", function () {
     it("Should create a new order", async function () {
       const tx = await orderTracking.connect(customer).createOrder(
-        merchant.address,
+        await merchant.getAddress(),
         "MacBook Pro",
         "16-inch, M3 Max",
         ethers.parseEther("2.5"),
@@ -76,16 +77,16 @@ describe("OrderTracking", function () {
         .to.emit(orderTracking, "OrderCreated")
         .withArgs(
           1,
-          customer.address,
-          merchant.address,
+          await customer.getAddress(),
+          await merchant.getAddress(),
           "MacBook Pro",
           ethers.parseEther("2.5"),
           await ethers.provider.getBlock("latest").then(b => b.timestamp)
         );
 
       const order = await orderTracking.getOrder(1);
-      expect(order.customer).to.equal(customer.address);
-      expect(order.merchant).to.equal(merchant.address);
+      expect(order.customer).to.equal(await customer.getAddress());
+      expect(order.merchant).to.equal(await merchant.getAddress());
       expect(order.productName).to.equal("MacBook Pro");
       expect(order.status).to.equal(0); // Pending
     });
@@ -105,7 +106,7 @@ describe("OrderTracking", function () {
     it("Should fail if creating order for yourself", async function () {
       await expect(
         orderTracking.connect(customer).createOrder(
-          customer.address,
+          await customer.getAddress(),
           "Product",
           "Description",
           ethers.parseEther("1"),
@@ -116,7 +117,7 @@ describe("OrderTracking", function () {
 
     it("Should track customer orders", async function () {
       await orderTracking.connect(customer).createOrder(
-        merchant.address,
+        await merchant.getAddress(),
         "Product 1",
         "Description",
         ethers.parseEther("1"),
@@ -124,14 +125,14 @@ describe("OrderTracking", function () {
       );
 
       await orderTracking.connect(customer).createOrder(
-        merchant.address,
+        await merchant.getAddress(),
         "Product 2",
         "Description",
         ethers.parseEther("2"),
         "Address"
       );
 
-      const customerOrders = await orderTracking.getCustomerOrders(customer.address);
+      const customerOrders = await orderTracking.getCustomerOrders(await customer.getAddress());
       expect(customerOrders.length).to.equal(2);
       expect(customerOrders[0]).to.equal(1);
       expect(customerOrders[1]).to.equal(2);
@@ -141,7 +142,7 @@ describe("OrderTracking", function () {
   describe("Order Updates", function () {
     beforeEach(async function () {
       await orderTracking.connect(customer).createOrder(
-        merchant.address,
+        await merchant.getAddress(),
         "Product",
         "Description",
         ethers.parseEther("1"),
@@ -154,7 +155,7 @@ describe("OrderTracking", function () {
         orderTracking.connect(merchant).updateOrderStatus(1, 1, "Order confirmed")
       )
         .to.emit(orderTracking, "OrderUpdated")
-        .withArgs(1, 1, merchant.address, await ethers.provider.getBlock("latest").then(b => b.timestamp));
+        .withArgs(1, 1, await merchant.getAddress(), await ethers.provider.getBlock("latest").then(b => b.timestamp));
 
       const order = await orderTracking.getOrder(1);
       expect(order.status).to.equal(1); // Confirmed
@@ -187,7 +188,7 @@ describe("OrderTracking", function () {
   describe("Order Cancellation", function () {
     beforeEach(async function () {
       await orderTracking.connect(customer).createOrder(
-        merchant.address,
+        await merchant.getAddress(),
         "Product",
         "Description",
         ethers.parseEther("1"),
@@ -200,7 +201,7 @@ describe("OrderTracking", function () {
         orderTracking.connect(customer).cancelOrder(1, "Changed my mind")
       )
         .to.emit(orderTracking, "OrderCancelled")
-        .withArgs(1, customer.address, await ethers.provider.getBlock("latest").then(b => b.timestamp));
+        .withArgs(1, await customer.getAddress(), await ethers.provider.getBlock("latest").then(b => b.timestamp));
 
       const order = await orderTracking.getOrder(1);
       expect(order.status).to.equal(5); // Cancelled
@@ -226,7 +227,7 @@ describe("OrderTracking", function () {
   describe("View Functions", function () {
     beforeEach(async function () {
       await orderTracking.connect(customer).createOrder(
-        merchant.address,
+        await merchant.getAddress(),
         "Product 1",
         "Description 1",
         ethers.parseEther("1"),
@@ -234,7 +235,7 @@ describe("OrderTracking", function () {
       );
 
       await orderTracking.connect(customer).createOrder(
-        merchant.address,
+        await merchant.getAddress(),
         "Product 2",
         "Description 2",
         ethers.parseEther("2"),
@@ -243,7 +244,7 @@ describe("OrderTracking", function () {
     });
 
     it("Should get merchant orders", async function () {
-      const merchantOrders = await orderTracking.getMerchantOrders(merchant.address);
+      const merchantOrders = await orderTracking.getMerchantOrders(await merchant.getAddress());
       expect(merchantOrders.length).to.equal(2);
     });
 
@@ -260,9 +261,10 @@ describe("OrderTracking", function () {
     });
 
     it("Should check if address is participant", async function () {
-      expect(await orderTracking.isOrderParticipant(1, customer.address)).to.be.true;
-      expect(await orderTracking.isOrderParticipant(1, merchant.address)).to.be.true;
-      expect(await orderTracking.isOrderParticipant(1, other.address)).to.be.false;
+      expect(await orderTracking.isOrderParticipant(1, await customer.getAddress())).to.be.true;
+      expect(await orderTracking.isOrderParticipant(1, await merchant.getAddress())).to.be.true;
+      expect(await orderTracking.isOrderParticipant(1, await other.getAddress())).to.be.false;
     });
   });
 });
+
