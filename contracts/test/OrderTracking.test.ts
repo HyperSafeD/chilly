@@ -350,6 +350,88 @@ describe("OrderTracking", function () {
       expect(order.transactionHash).to.not.equal(ethers.ZeroHash);
       expect(order.transactionHash.length).to.equal(66); // 0x + 64 hex chars
     });
+
+    it("Should handle edge cases", async function () {
+      // Test with very large order value
+      const largeOrderValue = ethers.parseEther("1000");
+      await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Expensive Product",
+        "Description",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: largeOrderValue }
+      );
+      const order1 = await orderTracking.getOrder(1);
+      expect(order1.price).to.equal(largeOrderValue);
+
+      // Test with maximum platform fee (10%) - deploy new contract with max fee
+      const OrderTrackingMaxFee = await ethers.getContractFactory("OrderTracking");
+      const contractMaxFee = await OrderTrackingMaxFee.deploy(1000, MIN_ORDER_VALUE);
+      await contractMaxFee.waitForDeployment();
+      const orderPrice = ethers.parseEther("1.0");
+      await contractMaxFee.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Product",
+        "Description",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: orderPrice }
+      );
+      const order2 = await contractMaxFee.getOrder(1);
+      expect(order2.price).to.equal(orderPrice);
+
+      // Test with empty product description (should be allowed)
+      await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Product",
+        "",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: MIN_ORDER_VALUE }
+      );
+      const order3 = await orderTracking.getOrder(2);
+      expect(order3.productDescription).to.equal("");
+
+      // Test with empty metadata hash (should be allowed)
+      await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Product",
+        "Description",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: MIN_ORDER_VALUE }
+      );
+      const order4 = await orderTracking.getOrder(3);
+      expect(order4.metadataHash).to.equal("");
+
+      // Test with estimated delivery of 0 (should be allowed)
+      await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Product",
+        "Description",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: MIN_ORDER_VALUE }
+      );
+      const order5 = await orderTracking.getOrder(4);
+      expect(order5.estimatedDelivery).to.equal(0);
+    });
   });
 
   describe("Order Updates", function () {
