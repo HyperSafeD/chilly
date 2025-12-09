@@ -434,6 +434,40 @@ describe("OrderTracking", function () {
     });
   });
 
+  describe("Order Confirmation", function () {
+    beforeEach(async function () {
+      await orderTracking.connect(customer).createOrder(
+        await merchant.getAddress(),
+        "Product",
+        "Description",
+        1,
+        ethers.ZeroAddress,
+        0,
+        "sepolia",
+        "",
+        { value: MIN_ORDER_VALUE }
+      );
+    });
+
+    it("Should confirm order (seller only)", async function () {
+      const orderBefore = await orderTracking.getOrder(1);
+      const updatedAtBefore = orderBefore.updatedAt;
+
+      // Test that seller can confirm pending order
+      const tx = await orderTracking.connect(merchant).confirmOrder(1);
+      await tx.wait();
+
+      const orderAfter = await orderTracking.getOrder(1);
+
+      // Test that status changes from Pending to Confirmed
+      expect(orderBefore.status).to.equal(0); // Pending
+      expect(orderAfter.status).to.equal(1); // Confirmed
+
+      // Test that updatedAt timestamp is updated
+      expect(orderAfter.updatedAt).to.be.gte(updatedAtBefore);
+    });
+  });
+
   describe("Order Updates", function () {
     beforeEach(async function () {
       await orderTracking.connect(customer).createOrder(
