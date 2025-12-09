@@ -84,27 +84,27 @@ The current `OrderTracking.sol` contract includes:
 
 ---
 
-## 3. Order Confirmation Tests (confirmOrder)
+## 3. Order Confirmation Tests (confirmOrder) ✅ COMPLETED
 
-### Missing Tests:
-- [ ] **Should confirm order (seller only)**
-  - Test that seller can confirm pending order
-  - Test that status changes from Pending to Confirmed
-  - Test that `updatedAt` timestamp is updated
-  - Test that OrderStatusUpdated event is emitted
+### Completed Tests:
+- [x] **Should confirm order (seller only)**
+  - ✅ Test that seller can confirm pending order
+  - ✅ Test that status changes from Pending to Confirmed
+  - ✅ Test that `updatedAt` timestamp is updated
+  - ✅ Test that OrderStatusUpdated event is emitted
 
-- [ ] **Should enforce authorization**
-  - Test that buyer cannot confirm order
-  - Test that non-participant cannot confirm order
-  - Test that only seller can confirm
+- [x] **Should enforce authorization**
+  - ✅ Test that buyer cannot confirm order
+  - ✅ Test that non-participant cannot confirm order
+  - ✅ Test that only seller can confirm
 
-- [ ] **Should enforce status requirements**
-  - Test that order must be in Pending status
-  - Test that confirmed order cannot be confirmed again
-  - Test that order must exist
+- [x] **Should enforce status requirements**
+  - ✅ Test that order must be in Pending status
+  - ✅ Test that confirmed order cannot be confirmed again
+  - ✅ Test that order must exist
 
-- [ ] **Should emit correct events**
-  - Test OrderStatusUpdated event with oldStatus = Pending, newStatus = Confirmed
+- [x] **Should emit correct events**
+  - ✅ Test OrderStatusUpdated event with oldStatus = Pending, newStatus = Confirmed
 
 ---
 
