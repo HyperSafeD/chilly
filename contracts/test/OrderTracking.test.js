@@ -15,6 +15,29 @@ describe("OrderTracking", function () {
     await orderTracking.waitForDeployment();
   });
 
+  describe("Constructor", function () {
+    it("Should deploy with correct platform fee and minimum order value", async function () {
+      const OrderTracking = await ethers.getContractFactory("OrderTracking");
+      const testPlatformFee = 150; // 1.5%
+      const testMinOrderValue = ethers.parseEther("0.05"); // 0.05 ETH
+      
+      const testContract = await OrderTracking.deploy(testPlatformFee, testMinOrderValue);
+      await testContract.waitForDeployment();
+
+      // Test that constructor sets platformFeeBps correctly
+      expect(await testContract.platformFeeBps()).to.equal(testPlatformFee);
+      
+      // Test that constructor sets minOrderValue correctly
+      expect(await testContract.minOrderValue()).to.equal(testMinOrderValue);
+      
+      // Test that constructor sets owner to deployer address
+      expect(await testContract.owner()).to.equal(owner.address);
+      
+      // Test that totalOrders starts at 0
+      expect(await testContract.totalOrders()).to.equal(0);
+    });
+  });
+
   describe("Order Creation", function () {
     it("Should create a new order", async function () {
       const tx = await orderTracking.connect(customer).createOrder(
