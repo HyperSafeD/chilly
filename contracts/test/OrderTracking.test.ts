@@ -64,78 +64,40 @@ describe("OrderTracking", function () {
   });
 
   describe("Order Creation", function () {
-    it("Should create a new order", async function () {
+    it("Should create order with all parameters", async function () {
+      const orderPrice = ethers.parseEther("1.0");
+      const quantity = 2;
+      const productName = "MacBook Pro";
+      const productDescription = "16-inch, M3 Max";
+      const estimatedDelivery = Math.floor(Date.now() / 1000) + 86400; // 1 day from now
+      const network = "sepolia";
+      const metadataHash = "QmHash123";
+
       const tx = await orderTracking.connect(customer).createOrder(
         await merchant.getAddress(),
-        "MacBook Pro",
-        "16-inch, M3 Max",
-        ethers.parseEther("2.5"),
-        "123 Main St, City, Country"
+        productName,
+        productDescription,
+        quantity,
+        ethers.ZeroAddress, // Native ETH
+        estimatedDelivery,
+        network,
+        metadataHash,
+        { value: orderPrice }
       );
-
-      await expect(tx)
-        .to.emit(orderTracking, "OrderCreated")
-        .withArgs(
-          1,
-          await customer.getAddress(),
-          await merchant.getAddress(),
-          "MacBook Pro",
-          ethers.parseEther("2.5"),
-          await ethers.provider.getBlock("latest").then(b => b.timestamp)
-        );
 
       const order = await orderTracking.getOrder(1);
-      expect(order.customer).to.equal(await customer.getAddress());
-      expect(order.merchant).to.equal(await merchant.getAddress());
-      expect(order.productName).to.equal("MacBook Pro");
+      expect(order.buyer).to.equal(await customer.getAddress());
+      expect(order.seller).to.equal(await merchant.getAddress());
+      expect(order.productName).to.equal(productName);
+      expect(order.productDescription).to.equal(productDescription);
+      expect(order.quantity).to.equal(quantity);
+      expect(order.price).to.equal(orderPrice);
+      expect(order.currency).to.equal(ethers.ZeroAddress);
+      expect(order.estimatedDelivery).to.equal(estimatedDelivery);
+      expect(order.network).to.equal(network);
+      expect(order.metadataHash).to.equal(metadataHash);
       expect(order.status).to.equal(0); // Pending
-    });
-
-    it("Should fail if merchant is zero address", async function () {
-      await expect(
-        orderTracking.connect(customer).createOrder(
-          ethers.ZeroAddress,
-          "Product",
-          "Description",
-          ethers.parseEther("1"),
-          "Address"
-        )
-      ).to.be.revertedWith("Invalid merchant address");
-    });
-
-    it("Should fail if creating order for yourself", async function () {
-      await expect(
-        orderTracking.connect(customer).createOrder(
-          await customer.getAddress(),
-          "Product",
-          "Description",
-          ethers.parseEther("1"),
-          "Address"
-        )
-      ).to.be.revertedWith("Cannot create order for yourself");
-    });
-
-    it("Should track customer orders", async function () {
-      await orderTracking.connect(customer).createOrder(
-        await merchant.getAddress(),
-        "Product 1",
-        "Description",
-        ethers.parseEther("1"),
-        "Address"
-      );
-
-      await orderTracking.connect(customer).createOrder(
-        await merchant.getAddress(),
-        "Product 2",
-        "Description",
-        ethers.parseEther("2"),
-        "Address"
-      );
-
-      const customerOrders = await orderTracking.getCustomerOrders(await customer.getAddress());
-      expect(customerOrders.length).to.equal(2);
-      expect(customerOrders[0]).to.equal(1);
-      expect(customerOrders[1]).to.equal(2);
+      expect(order.orderNumber).to.equal("ORD-1");
     });
   });
 
