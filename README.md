@@ -82,6 +82,8 @@ npm test
 npm run deploy:sepolia
 ```
 
+**Note:** Smart contract tests are written in TypeScript and cover constructor, order creation, and order confirmation functionality. See [contracts/test.md](./contracts/test.md) for a comprehensive list of test coverage.
+
 See [contracts/README.md](./contracts/README.md) for detailed documentation.
 
 ### 2. Frontend Setup
